@@ -5,7 +5,7 @@ const path = require('path');
 const projectRoot = __dirname;
 // Points up to your main 'game' workspace folder
 const workspaceRoot = path.resolve(projectRoot, '../..');
-
+//const baseDefaultConfig = getDefaultConfig(projectRoot);
 const config = {
   watchFolders: [workspaceRoot],
   resolver: {
@@ -16,6 +16,14 @@ const config = {
       path.resolve(projectRoot, 'node_modules'),
       path.resolve(workspaceRoot, 'node_modules'),
     ],
+    // assetExts: [
+    //   ...baseDefaultConfig.resolver.assetExts,
+    //   'mp3',
+    //   'wav',
+    //   'aac',
+    //   'm4a',
+    //   'ogg',
+    // ],
   },
 };
 module.exports = withNativeWind(

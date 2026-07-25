@@ -12,9 +12,11 @@ import {
 import { View as MotiView } from 'moti';
 import { useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
+import { CoinRewardModal } from './CoinRewardModal';
 import { useTheme } from '../hooks/useTheme';
 // 1. Switch import to the infinite streaming package
 import Confetti from 'react-native-confetti';
+import useSound from '../hooks/useSound';
 
 const { width } = Dimensions.get('window');
 
@@ -37,6 +39,8 @@ export default function ResultOverlay({
   const confettiRef = useRef<any>(null);
   const navigation = useNavigation();
   const nextLevel = currentLevel + 1;
+  const { playSound, stopSound } = useSound();
+  const [showCoinModal, setShowCoinModal] = React.useState(false);
 
   useEffect(() => {
     let confettiInterval: any;
@@ -45,6 +49,7 @@ export default function ResultOverlay({
     // 2. Wait until the modal is actually visible before kicking off the loop
     if (isVisible && hasWon && currentConfetti) {
       currentConfetti.startConfetti();
+      playSound('confetti_sound.mp3');
 
       confettiInterval = setInterval(() => {
         currentConfetti.startConfetti();
@@ -56,8 +61,20 @@ export default function ResultOverlay({
         clearInterval(confettiInterval);
       }
       currentConfetti?.stopConfetti();
+      stopSound();
     };
-  }, [isVisible, hasWon]);
+  }, [isVisible, hasWon, playSound, stopSound]);
+  const handleNext = () => {
+    if (hasWon) {
+      setShowCoinModal(true);
+    } else {
+      onNext();
+    }
+  };
+  const handleCloseCoinModal = () => {
+    setShowCoinModal(false);
+    onNext();
+  };
 
   return (
     <Modal
@@ -216,7 +233,7 @@ export default function ResultOverlay({
 
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  onPress={onNext}
+                  onPress={handleNext}
                   className="w-[47%] py-4 rounded-2xl items-center justify-center flex-row shadow-md "
                   style={{ backgroundColor: theme.primary }}
                 >
@@ -234,6 +251,12 @@ export default function ResultOverlay({
             </View>
           </MotiView>
         </View>
+        <CoinRewardModal
+          isVisible={showCoinModal}
+          existCoins={100}
+          addCoins={10}
+          onClose={() => handleCloseCoinModal()}
+        />
 
         {/* 3. Replaced ConfettiCannon component with the stream component */}
         {hasWon && (

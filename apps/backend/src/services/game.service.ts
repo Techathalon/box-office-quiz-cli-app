@@ -30,7 +30,10 @@ export async function getLevelsForMode(userId: number, mode: GameMode) {
         levelsLost: [],
       },
     });
-    return [];
+    return {
+      levels: { currentLevel: 1, levelsWon: [], levelsLost: [] },
+      questionCount: questionsCount,
+    };
   }
   return { levels, questionCount: questionsCount };
 }

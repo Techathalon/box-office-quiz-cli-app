@@ -17,7 +17,7 @@ export const calculateUserRewards = (
   const { totalQuestions } = useAuthStore.getState();
   console.log('totalQuestions', totalQuestions);
   const COINS_PER_WIN = 10;
-  const COINS_PER_LOSS = 1;
+  const COINS_PER_LOSS = 0;
   const baseCoins = wonCount * COINS_PER_WIN + lostCount * COINS_PER_LOSS;
   const totalGames = wonCount + lostCount;
   const winRate = totalGames > 0 ? wonCount / totalQuestions : 0;

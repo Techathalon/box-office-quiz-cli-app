@@ -575,7 +575,7 @@ export default function LeaderboardScreen() {
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
             onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.3}
+            onEndReachedThreshold={0.1}
             ListFooterComponent={renderFooter}
             refreshControl={
               <RefreshControl

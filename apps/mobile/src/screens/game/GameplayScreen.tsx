@@ -17,6 +17,7 @@ import { getQuestion, updateLevelData } from '../../services/api';
 import ResultOverlay from '../../components/ResultOverlay';
 import RenderQuestion from '../../components/RenderQuestion';
 import { useCallback } from 'react';
+import useSound from '../../hooks/useSound';
 
 const { width } = Dimensions.get('window');
 
@@ -24,6 +25,7 @@ export default function GameplayScreen({ route, navigation }: any) {
   const { mode, level } = route.params;
   const { theme } = useTheme();
   const { user } = useAuth();
+  const { playSound, stopSound } = useSound();
 
   const [loading, setLoading] = useState(true);
   const [questionData, setQuestionData] = useState<any>(null);
@@ -84,9 +86,15 @@ export default function GameplayScreen({ route, navigation }: any) {
   );
 
   const handleNextAction = () => {
+    playSound('level_up_sound.mp3');
     setShowResultModal(false);
     navigation.replace('GameplayScreen', { mode, level: level + 1 });
   };
+  useEffect(() => {
+    return () => {
+      stopSound();
+    };
+  }, [stopSound]);
 
   if (loading) {
     return (
