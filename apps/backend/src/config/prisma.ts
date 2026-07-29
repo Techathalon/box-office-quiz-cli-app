@@ -1,6 +1,7 @@
-import { PrismaClient } from "../../generated/prisma/client.js";
-import pg from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
+import 'dotenv/config';
+import { PrismaClient } from '../../generated/prisma/client.js';
+import pg from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 // 1. Create a native connection pool using your local database URL
 const pool = new pg.Pool({

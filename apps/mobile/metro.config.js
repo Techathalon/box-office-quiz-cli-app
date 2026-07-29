@@ -1,22 +1,11 @@
-// const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
-
-// /**
-//  * Metro configuration
-//  * https://reactnative.dev/docs/metro
-//  *
-//  * @type {import('@react-native/metro-config').MetroConfig}
-//  */
-// const config = {};
-
-// module.exports = mergeConfig(getDefaultConfig(__dirname), config);
-
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+const { withNativeWind } = require('nativewind/metro');
 const path = require('path');
 
 const projectRoot = __dirname;
 // Points up to your main 'game' workspace folder
 const workspaceRoot = path.resolve(projectRoot, '../..');
-
+//const baseDefaultConfig = getDefaultConfig(projectRoot);
 const config = {
   watchFolders: [workspaceRoot],
   resolver: {
@@ -27,7 +16,19 @@ const config = {
       path.resolve(projectRoot, 'node_modules'),
       path.resolve(workspaceRoot, 'node_modules'),
     ],
+    // assetExts: [
+    //   ...baseDefaultConfig.resolver.assetExts,
+    //   'mp3',
+    //   'wav',
+    //   'aac',
+    //   'm4a',
+    //   'ogg',
+    // ],
   },
 };
-
-module.exports = mergeConfig(getDefaultConfig(projectRoot), config);
+module.exports = withNativeWind(
+  mergeConfig(getDefaultConfig(projectRoot), config),
+  {
+    input: './global.css',
+  },
+);

@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+import { View, Text, ScrollView, ImageBackground } from 'react-native';
+import { MotiView } from 'moti';
+import { useTheme } from '../../hooks/useTheme';
+import { useAuth } from '../../hooks/useAuth';
+import CardPage from '../../components/CardPage';
+import { formatName } from '../../utils/game.util';
+import { Card } from '../../types/type';
+import EditProfileModal from '../../components/EditProfileModal';
+import useSound from '../../hooks/useSound';
+
+export default function ProfileScreen() {
+  const { theme } = useTheme();
+  const { user } = useAuth();
+  const { isMuted, setIsMuted } = useSound();
+
+  // Modal visibility states
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const openProfileModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const settingCards: Card[] = [
+    {
+      id: 1,
+      title: 'Profile',
+      desc: 'Edit your profile',
+      icon: 'user',
+      characterImg: require('../../../assets/profile_card_image.png'),
+      mode: 'column',
+      handlePress: openProfileModal,
+    },
+    {
+      id: 2,
+      title: 'Sound Effects',
+      desc: isMuted
+        ? 'Sound effects are turned off'
+        : 'Play audio during gameplay',
+      icon: isMuted ? 'volume-x' : 'volume-2',
+      hasToggle: true,
+      mode: 'column',
+      toggleValue: isMuted,
+      onToggleChange: setIsMuted,
+    },
+    {
+      id: 3,
+      title: 'About',
+      desc: 'Learn more about us',
+      icon: 'info',
+      mode: 'column',
+    },
+  ];
+
+  return (
+    <ImageBackground
+      source={require('../../../assets/background_bg.png')}
+      className="flex-1"
+      resizeMode="cover"
+    >
+      <ScrollView
+        className="absolute inset-0 bg-black/30"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
+        {/* HEADER HERO AREA */}
+        <View className="relative h-48 justify-end items-center pb-6">
+          <View className="absolute top-0 left-0 right-0 h-40 rounded-b-[40px] bg-zinc-900/55" />
+
+          {/* Avatar Ring Container */}
+          <MotiView
+            from={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'timing', duration: 800 }}
+            className="z-10 rounded-full p-1.5 border-4"
+            style={{
+              borderColor: theme.primaryYellow,
+              backgroundColor: theme.surface,
+              shadowColor: theme.shadow,
+              shadowOffset: { width: 0, height: 10 },
+              shadowOpacity: 0.3,
+              shadowRadius: 15,
+              elevation: 8,
+            }}
+          >
+            <View className="w-24 h-24 rounded-full justify-center items-center bg-[#FFF2E0]">
+              <Text style={{ fontSize: 56 }} className="animate-bounce">
+                {user?.avatar}
+              </Text>
+            </View>
+          </MotiView>
+        </View>
+
+        {/* USER NAME & ID */}
+        <View className="items-center px-6 mb-6">
+          <Text
+            className="text-2xl font-black tracking-wide text-center"
+            style={{ color: theme.text }}
+          >
+            {formatName(user?.name || 'Guest')}
+          </Text>
+          <Text
+            className="text-md font-semibold tracking-wider mt-1 opacity-80"
+            style={{ color: theme.primaryYellow }}
+          >
+            ★ Lights Camera Action ★
+          </Text>
+        </View>
+
+        <View className="flex items-center mx-3">
+          {settingCards.map(card => (
+            <CardPage key={card.id} mode={card} />
+          ))}
+        </View>
+      </ScrollView>
+      <EditProfileModal
+        isModalVisible={isModalVisible}
+        setIsModalVisible={setIsModalVisible}
+      />
+    </ImageBackground>
+  );
+}
