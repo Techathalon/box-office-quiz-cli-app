@@ -5,7 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  ImageBackground,
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -78,12 +77,8 @@ export default function LevelSelectionScreen({ route, navigation }: any) {
   );
 
   return (
-    <ImageBackground
-      source={require('../../../assets/background_bg.png')}
-      className="flex-1"
-      resizeMode="cover"
-    >
-      <View className="absolute inset-0 bg-black/30" />
+    <>
+      <View className="absolute inset-0 " />
 
       <SafeAreaView className="flex-1">
         {/* Sleek Minimalist Navbar */}
@@ -254,6 +249,6 @@ export default function LevelSelectionScreen({ route, navigation }: any) {
           </View>
         </ScrollView>
       </SafeAreaView>
-    </ImageBackground>
+    </>
   );
 }

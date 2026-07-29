@@ -14,6 +14,8 @@ import Icon from 'react-native-vector-icons/Feather';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import { getAvatarOptions, handleEditProfile } from '../services/api';
+import { SvgXml } from 'react-native-svg';
+import multiavatar from '@multiavatar/multiavatar/esm';
 
 interface EditProfileModalProps {
   isModalVisible: boolean;
@@ -74,6 +76,7 @@ export default function EditProfileModal({
       console.error('Failed updating profile:', error);
     }
   };
+  const mainAvatarSvg = multiavatar(editAvatar || 'Binx Bond');
 
   return (
     <Modal
@@ -110,7 +113,9 @@ export default function EditProfileModal({
           </View>
 
           <View className="w-20 h-20 rounded-full justify-center items-center bg-[#FFF2E0] mb-4 border-2 border-slate-200">
-            <Text style={{ fontSize: 44 }}>{editAvatar || '❓'}</Text>
+            <Text style={{ fontSize: 44 }}>
+              <SvgXml xml={mainAvatarSvg} />
+            </Text>
           </View>
 
           <Text
@@ -128,19 +133,24 @@ export default function EditProfileModal({
                 showsHorizontalScrollIndicator={false}
                 className="flex-row w-full"
               >
-                {avatarOptions?.map(emoji => (
-                  <TouchableOpacity
-                    key={emoji}
-                    onPress={() => setEditAvatar(emoji)}
-                    className={`w-11 h-11 items-center justify-center rounded-full mr-2 border-2 ${
-                      editAvatar === emoji
-                        ? 'border-amber-400 bg-amber-50'
-                        : 'border-slate-100 bg-slate-50'
-                    }`}
-                  >
-                    <Text style={{ fontSize: 22 }}>{emoji}</Text>
-                  </TouchableOpacity>
-                ))}
+                {avatarOptions?.map(avatarName => {
+                  const svg = multiavatar(avatarName);
+                  return (
+                    <TouchableOpacity
+                      key={avatarName}
+                      onPress={() => setEditAvatar(avatarName)}
+                      className={`w-11 h-11 items-center justify-center rounded-full mr-2 border-2 ${
+                        editAvatar === avatarName
+                          ? 'border-amber-400 bg-amber-50'
+                          : 'border-slate-100 bg-slate-50'
+                      }`}
+                    >
+                      <Text style={{ fontSize: width * 0.04 }}>
+                        <SvgXml xml={svg} />
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </ScrollView>
             )}
           </View>

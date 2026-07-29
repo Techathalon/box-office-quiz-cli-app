@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, ImageBackground } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { MotiView } from 'moti';
 import { useTheme } from '../../hooks/useTheme';
 import { useAuth } from '../../hooks/useAuth';
@@ -8,11 +14,17 @@ import { formatName } from '../../utils/game.util';
 import { Card } from '../../types/type';
 import EditProfileModal from '../../components/EditProfileModal';
 import useSound from '../../hooks/useSound';
+import { SvgXml } from 'react-native-svg';
+import multiavatar from '@multiavatar/multiavatar/esm';
+import { ThemeMode } from '../../stores/theme.store';
+import Feather from 'react-native-vector-icons/Feather';
 
+const { width } = Dimensions.get('window');
 export default function ProfileScreen() {
-  const { theme } = useTheme();
+  const { theme, mode, setMode } = useTheme();
   const { user } = useAuth();
   const { isMuted, setIsMuted } = useSound();
+  const svgCode = multiavatar(user?.avatar || 'Binx Bond');
 
   // Modal visibility states
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -43,6 +55,7 @@ export default function ProfileScreen() {
       toggleValue: isMuted,
       onToggleChange: setIsMuted,
     },
+
     {
       id: 3,
       title: 'About',
@@ -51,15 +64,19 @@ export default function ProfileScreen() {
       mode: 'column',
     },
   ];
+  const themeOptions: { mode: ThemeMode; label: string; icon: string }[] = [
+    { mode: 'light', label: 'Light', icon: 'sun' },
+    { mode: 'dark', label: 'Dark', icon: 'moon' },
+    { mode: 'system', label: 'System', icon: 'monitor' },
+  ];
+  const handleThemeChange = async (mode: ThemeMode) => {
+    setMode(mode);
+  };
 
   return (
-    <ImageBackground
-      source={require('../../../assets/background_bg.png')}
-      className="flex-1"
-      resizeMode="cover"
-    >
+    <View className="flex-1">
       <ScrollView
-        className="absolute inset-0 bg-black/30"
+        className="absolute inset-0 "
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       >
@@ -85,7 +102,7 @@ export default function ProfileScreen() {
           >
             <View className="w-24 h-24 rounded-full justify-center items-center bg-[#FFF2E0]">
               <Text style={{ fontSize: 56 }} className="animate-bounce">
-                {user?.avatar}
+                <SvgXml xml={svgCode} />
               </Text>
             </View>
           </MotiView>
@@ -95,16 +112,84 @@ export default function ProfileScreen() {
         <View className="items-center px-6 mb-6">
           <Text
             className="text-2xl font-black tracking-wide text-center"
-            style={{ color: theme.text }}
+            style={{ color: theme.secondary }}
           >
             {formatName(user?.name || 'Guest')}
           </Text>
           <Text
-            className="text-md font-semibold tracking-wider mt-1 opacity-80"
-            style={{ color: theme.primaryYellow }}
+            className="text-md font-bold italic tracking-wider mt-1 opacity-80"
+            style={{ color: theme.success }}
           >
             ★ Lights Camera Action ★
           </Text>
+        </View>
+        <View className="flex items-center mx-6 mb-3">
+          <View
+            className="w-full felx-col p-2 rounded-2xl border"
+            style={{
+              borderColor: theme.border || '#E5E7EB',
+              backgroundColor: theme.card || '#FFFFFF',
+            }}
+          >
+            <View className=" flex-row items-center ml-4 my-2">
+              <View
+                className="w-9 h-9 rounded-xl items-center justify-center mr-2"
+                style={{ backgroundColor: theme.iconBg }}
+              >
+                <Feather
+                  name={mode === 'light' ? 'sun' : 'moon'}
+                  size={width * 0.05}
+                  color={theme.iconText || '#FFFFFF'}
+                />
+              </View>
+              <Text
+                className="text-[13px] font-black tracking-wide uppercase"
+                style={{ color: theme.text }}
+              >
+                Customize App Appearance
+              </Text>
+            </View>
+            <View className="w-full flex-row justify-between items-center p-2 ">
+              {themeOptions.map(option => {
+                const isActive = mode === option.mode;
+
+                return (
+                  <TouchableOpacity
+                    key={option.mode}
+                    activeOpacity={0.7}
+                    onPress={() => handleThemeChange(option.mode)}
+                    className="flex-1 flex-row items-center justify-center py-3 px-2 mx-1 rounded-xl"
+                    style={{
+                      backgroundColor: isActive
+                        ? `${theme.primary}`
+                        : `${theme.primary}33`,
+                    }}
+                  >
+                    <Feather
+                      name={option.icon}
+                      size={18}
+                      color={
+                        isActive
+                          ? theme.white || '#0EA5E9'
+                          : theme.primary || '#6B7280'
+                      }
+                      style={{ marginRight: 6 }}
+                    />
+                    <Text
+                      className="text-sm font-bold tracking-wide"
+                      style={{
+                        color: isActive
+                          ? theme.white || '#0EA5E9'
+                          : theme.primary || '#6B7280',
+                      }}
+                    >
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
         </View>
 
         <View className="flex items-center mx-3">
@@ -112,11 +197,13 @@ export default function ProfileScreen() {
             <CardPage key={card.id} mode={card} />
           ))}
         </View>
+        {isModalVisible && (
+          <EditProfileModal
+            isModalVisible={isModalVisible}
+            setIsModalVisible={setIsModalVisible}
+          />
+        )}
       </ScrollView>
-      <EditProfileModal
-        isModalVisible={isModalVisible}
-        setIsModalVisible={setIsModalVisible}
-      />
-    </ImageBackground>
+    </View>
   );
 }

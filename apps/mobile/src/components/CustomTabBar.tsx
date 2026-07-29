@@ -18,7 +18,6 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const horizontalMargin = isLargeScreen ? (width - 500) / 2 : 16;
 
   return (
-    // Outer floating container positioned at the bottom absolute center
     <View
       className="absolute bottom-6 flex-row items-center justify-between px-9 bg-transparent"
       style={{
@@ -31,7 +30,7 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         className="flex-1 flex-row items-center justify-between rounded-full h-14 px-4 border"
         style={{
           backgroundColor: theme.lightskyprimary,
-          borderColor: theme.border,
+          borderColor: theme.lightskyprimary,
           borderWidth: 1,
           //opacity: 0.95,
           ...Platform.select({
@@ -76,17 +75,17 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
               accessibilityState={isFocused ? { selected: true } : {}}
               onPress={onPress}
               activeOpacity={0.7}
-              className="flex-1 items-center justify-center h-11 rounded-full"
+              className="flex-1 items-center justify-center h-11 rounded-full m-1"
               style={{
                 backgroundColor: isFocused
-                  ? `${theme.primary}1A`
-                  : 'transparent',
+                  ? `${theme.primary}`
+                  : `${theme.primary}33`,
               }}
             >
               <Icon
                 name={iconName}
                 size={22}
-                color={isFocused ? theme.primary : theme.textSecondary}
+                color={isFocused ? theme.white : theme.primary}
               />
             </TouchableOpacity>
           );

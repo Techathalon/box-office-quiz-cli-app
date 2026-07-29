@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  ImageBackground,
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -120,12 +119,8 @@ export default function GameplayScreen({ route, navigation }: any) {
 
   return (
     <>
-      <ImageBackground
-        source={require('../../../assets/background_bg.png')}
-        className="flex-1"
-        resizeMode="cover"
-      >
-        <View className="absolute inset-0 bg-black/30" />
+      <>
+        <View className="absolute inset-0 " />
 
         <SafeAreaView className="flex-1 px-5 justify-start">
           {/* Header */}
@@ -319,7 +314,7 @@ export default function GameplayScreen({ route, navigation }: any) {
             onNext={handleNextAction}
           />
         </SafeAreaView>
-      </ImageBackground>
+      </>
     </>
   );
 }

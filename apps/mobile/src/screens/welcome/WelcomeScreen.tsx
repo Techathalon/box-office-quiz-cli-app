@@ -25,6 +25,7 @@ const WelcomePage: React.FC = () => {
       source={require('../../../assets/welcome_bg.png')}
       className="flex-1"
       resizeMode="cover"
+      style={{ backgroundColor: theme.white }}
     >
       {/* Dark cinematic gradient/overlay */}
       <View className="absolute inset-0 bg-black/30" />

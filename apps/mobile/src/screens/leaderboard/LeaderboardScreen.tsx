@@ -3,20 +3,20 @@ import {
   View,
   Text,
   FlatList,
-  Image,
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
   Dimensions,
   StyleSheet,
   ScrollView,
-  ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View as MotiView } from 'moti';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { calculateUserRewards } from '../../utils/game.util';
+import { SvgXml } from 'react-native-svg';
+import multiavatar from '@multiavatar/multiavatar/esm';
 
 import { getAllUsersWithProgress } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
@@ -160,30 +160,30 @@ export default function LeaderboardScreen() {
   };
 
   // Helper function to safely render Emoji OR URL avatars
-  const renderAvatar = (avatar?: string, size: number = 48) => {
-    const isUrl = avatar && avatar.startsWith('http');
-    if (isUrl) {
-      return (
-        <Image
-          source={{ uri: avatar }}
-          style={{ width: size, height: size, borderRadius: size / 2 }}
-        />
-      );
-    }
+  // const renderAvatar = (avatar?: string, size: number = 48) => {
+  //   const isUrl = avatar && avatar.startsWith('http');
+  //   if (isUrl) {
+  //     return (
+  //       <Image
+  //         source={{ uri: avatar }}
+  //         style={{ width: size, height: size, borderRadius: size / 2 }}
+  //       />
+  //     );
+  //   }
 
-    return (
-      <View
-        className="justify-center items-center rounded-full"
-        style={{
-          width: size,
-          height: size,
-          backgroundColor: theme.lightskyprimary || '#F0F9FF',
-        }}
-      >
-        <Text style={{ fontSize: size * 0.5 }}>{avatar || '👤'}</Text>
-      </View>
-    );
-  };
+  //   return (
+  //     <View
+  //       className="justify-center items-center rounded-full"
+  //       style={{
+  //         width: size,
+  //         height: size,
+  //         backgroundColor: theme.lightskyprimary || '#F0F9FF',
+  //       }}
+  //     >
+  //       <Text style={{ fontSize: size * 0.5 }}>{avatar || '👤'}</Text>
+  //     </View>
+  //   );
+  // };
 
   const renderTabs = () => (
     <ScrollView
@@ -275,6 +275,7 @@ export default function LeaderboardScreen() {
 
         <View className="flex-row items-end justify-center w-full px-2">
           {podiumOrder.map((user, idx) => {
+            const svgCode = multiavatar(user?.avatar || 'Binx Bond');
             if (!user) {
               return <View key={idx} style={{ width: width * 0.28 }} />;
             }
@@ -358,7 +359,8 @@ export default function LeaderboardScreen() {
                     },
                   ]}
                 >
-                  {renderAvatar(user.avatar, 68 * sizeMultiplier)}
+                  {/* {renderAvatar(user.avatar, 68 * sizeMultiplier)} */}
+                  <SvgXml xml={svgCode} />
 
                   {/* Rank Badge */}
                   <View
@@ -447,6 +449,7 @@ export default function LeaderboardScreen() {
   const renderItem = (item: RankUser, index: number) => {
     const { coins, winRatePercentage, awardTitle, awardBadgeColor, iconName } =
       calculateUserRewards(item.wonCount || 0, item.lostCount || 0);
+    const svgCode = multiavatar(item.avatar || 'Binx Bond');
 
     return (
       <MotiView
@@ -466,7 +469,11 @@ export default function LeaderboardScreen() {
           {item.rank}
         </Text>
 
-        <View className="mx-3">{renderAvatar(item.avatar, width * 0.1)}</View>
+        <View className="mx-3">
+          <Text className="w-10 h-10 rounded-full items-center justify-center">
+            <SvgXml xml={svgCode} />
+          </Text>
+        </View>
 
         <View className="flex-1">
           <Text
@@ -542,76 +549,67 @@ export default function LeaderboardScreen() {
   };
 
   return (
-    <ImageBackground
-      source={require('../../../assets/background_bg.png')}
-      className="flex-1"
-      resizeMode="cover"
-    >
-      <SafeAreaView className="flex-1 pb-9">
-        <View>{renderTabs()}</View>
+    <SafeAreaView className="flex-1 pb-9">
+      <View>{renderTabs()}</View>
 
-        <View>{renderPodium()}</View>
+      <View>{renderPodium()}</View>
 
-        {loading && leaderboardData.length === 0 ? (
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator
-              size="large"
-              color={theme.primary || '#3B82F6'}
+      {loading && leaderboardData.length === 0 ? (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color={theme.primary || '#3B82F6'} />
+          <Text
+            className="mt-3 text-xs font-semibold"
+            style={{ color: theme.textSecondary || '#6B7280' }}
+          >
+            Fetching champions...
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={otherPlayers}
+          renderItem={({ item, index }) => renderItem(item, index)}
+          keyExtractor={(item, idx) =>
+            item.userId ? item.userId.toString() : idx.toString()
+          }
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.1}
+          ListFooterComponent={renderFooter}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              colors={[theme.primary || '#3B82F6']}
+              tintColor={theme.primary || '#3B82F6'}
             />
-            <Text
-              className="mt-3 text-xs font-semibold"
-              style={{ color: theme.textSecondary || '#6B7280' }}
-            >
-              Fetching champions...
-            </Text>
-          </View>
-        ) : (
-          <FlatList
-            data={otherPlayers}
-            renderItem={({ item, index }) => renderItem(item, index)}
-            keyExtractor={(item, idx) =>
-              item.userId ? item.userId.toString() : idx.toString()
-            }
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.1}
-            ListFooterComponent={renderFooter}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-                colors={[theme.primary || '#3B82F6']}
-                tintColor={theme.primary || '#3B82F6'}
-              />
-            }
-            ListEmptyComponent={
-              !loading ? (
-                <View className="flex-1 justify-center items-center  px-6  ">
-                  <MaterialCommunityIcons
-                    name="trophy-outline"
-                    size={width * 0.1}
-                    color={theme.text || '#D1D5DB'}
-                  />
-                  <Text
-                    className="mt-4 text-[14px] font-black text-center uppercase"
-                    style={{ color: theme.text || '#111827' }}
-                  >
-                    No champions in {TABS[activeTab].title} yet
-                  </Text>
-                  <Text
-                    className="text-[14px] font-bold text-center mt-3 uppercase"
-                    style={{ color: theme.iconText || '#6B7280' }}
-                  >
-                    Play games to climb up the leaderboards!
-                  </Text>
-                </View>
-              ) : null
-            }
-          />
-        )}
-      </SafeAreaView>
-    </ImageBackground>
+          }
+          ListEmptyComponent={
+            !loading ? (
+              <View className="flex-1 justify-center items-center  px-6  ">
+                <MaterialCommunityIcons
+                  name="trophy-outline"
+                  size={width * 0.1}
+                  color={theme.text || '#D1D5DB'}
+                />
+                <Text
+                  className="mt-4 text-[14px] font-black text-center uppercase"
+                  style={{ color: theme.text || '#111827' }}
+                >
+                  No champions in {TABS[activeTab].title} yet
+                </Text>
+                <Text
+                  className="text-[14px] font-bold text-center mt-3 uppercase"
+                  style={{ color: theme.iconText || '#6B7280' }}
+                >
+                  Play games to climb up the leaderboards!
+                </Text>
+              </View>
+            ) : null
+          }
+        />
+      )}
+    </SafeAreaView>
   );
 }
 

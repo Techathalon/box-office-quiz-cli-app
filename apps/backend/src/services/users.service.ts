@@ -3,7 +3,7 @@ import {
   generateFilmyComedyName,
 } from '../utils/generators.js';
 import prisma from '../config/prisma.js';
-import { TEDDY_EMOJIS } from '../utils/generators.js';
+import { avatarNames } from '../utils/generators.js';
 
 export async function handleDeviceOnboarding(
   deviceTokenValue: string,
@@ -57,5 +57,5 @@ export async function handleEditProfile(
   return null;
 }
 export async function getAvatarOptions() {
-  return TEDDY_EMOJIS;
+  return avatarNames;
 }

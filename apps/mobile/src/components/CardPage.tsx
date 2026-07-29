@@ -37,7 +37,7 @@ export default function CardPage({ mode }: CardProps) {
           // Slightly increased column height to 0.12 so typography and images layout elegantly together
           height: isColumn ? height * 0.12 : height * 0.2,
           backgroundColor: `${theme.card}`,
-          borderColor: '#E2E8F0',
+          borderColor: theme.border,
           ...Platform.select({
             ios: {
               shadowColor: '#000000',
@@ -98,19 +98,21 @@ export default function CardPage({ mode }: CardProps) {
               }`}
             >
               <Text
-                className={`font-black tracking-tight text-slate-900 ${
+                className={`font-black tracking-tight  ${
                   isColumn ? 'text-lg mb-0' : 'text-base mb-0.5'
                 }`}
                 numberOfLines={1}
+                style={{ color: theme.text }}
               >
                 {mode.title}
               </Text>
 
               <Text
-                className={` leading-tight text-slate-500 text-[11px] ${
+                className={` leading-tight  text-[11px] ${
                   isColumn ? 'text-[14px]' : 'text-[13px]'
                 }`}
                 numberOfLines={isColumn ? 2 : 3}
+                style={{ color: theme.textSecondary }}
               >
                 {mode.desc}
               </Text>

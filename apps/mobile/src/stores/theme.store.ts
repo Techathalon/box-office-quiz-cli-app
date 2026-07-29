@@ -35,6 +35,7 @@ export const useThemeStore = create<ThemeState>()(
       storage: createJSONStorage(() => keychainStorageAdapter),
       partialize: state => ({
         mode: state.mode,
+        theme: state.theme,
       }),
     },
   ),

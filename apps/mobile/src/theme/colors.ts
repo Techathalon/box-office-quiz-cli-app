@@ -63,29 +63,42 @@ export const lightTheme: Theme = {
   shadow: 'rgba(92, 56, 24, 0.08)',
 };
 export const darkTheme: Theme = {
-  // Main vibrant blue accents
-  lightskyprimary: '#BAE6FD',
-  primary: '#0EA5E9', // Sky Blue for dark mode contrast
-  primaryDark: '#0080fe',
-  secondary: '#34D399',
-  primaryYellow: '#FBBF24',
-  primaryYellowDark: '#F59E0B',
-  secondaryYellow: '#FCD34D',
-  background: '#0F172A',
-  surface: '#1E293B',
-  iconBg: '#1E293B',
-  iconText: '#94A3B8',
-  card: '#1E293B', // Slate dark container backgrounds
-  text: '#F8FAFC',
-  textSecondary: '#CBD5E1',
-  placeholder: '#94A3B8',
-  border: '#334155',
-  divider: '#475569',
-  success: '#22C55E',
-  warning: '#FBBF24',
-  error: '#F87171',
-  info: '#60A5FA',
+  // Vibrant blue accents optimized for dark background contrast
+  lightskyprimary: '#BAE6FD', // Richer, deeper sky blue container fill for dark mode
+  primary: '#0EA5E9', // Sky blue primary accent
+  primaryDark: '#0080FE', // High-contrast primary blue
+  secondary: '#E28743', // Warm secondary amber accent preserved
+  primaryYellow: '#FADA50', // Vibrant yellow highlight accent
+  primaryYellowDark: '#F59E0B', // Darker yellow accent
+  secondaryYellow: '#FCD34D', // Warm yellow highlight
+
+  // Icon containers & icons for dark surfaces
+  iconBg: '#0EA5E920', // Warm dark amber/brown container tint
+  iconText: '#0EA5E9', // Crisp golden-yellow icon color
+
+  // Dark slate surface foundations
+  background: '#0F172A', // Deep slate navy background
+  surface: '#1E293B', // Dark slate surface container
+  card: '#1E293B', // Clean slate card background
+
+  // Typography with optimal dark contrast
+  text: '#F8FAFC', // Pure slate white for main titles
+  textSecondary: '#94A3B8', // Soft muted slate for subtext & labels
+  placeholder: '#64748B', // Accessible placeholder text
+
+  // Dark borders and dividers
+  border: '#334155', // Subtle slate border line
+  divider: '#1E293B', // Clean section divider
+
+  // Feedback states
+  success: '#EAB308', // Warm flame/streak yellow
+  warning: '#F59E0B', // Amber warning/points badge
+  error: '#EF4444',
+  info: '#3B82F6',
+
   white: '#FFFFFF',
   black: '#000000',
-  shadow: 'rgba(0,0,0,0.3)',
+
+  // Deep subtle shadow for dark mode depth
+  shadow: 'rgba(0, 0, 0, 0.4)',
 };

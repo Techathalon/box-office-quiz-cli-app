@@ -11,6 +11,7 @@ import Toast from 'react-native-toast-message';
 import { useAlertStore } from './src/stores/alert.store';
 import CustomAlert from './src/components/CustomAlert';
 import AppStack from './src/navigation/AppStack';
+import AppLayout from './src/components/AppLayout';
 import { NavigationContainer } from '@react-navigation/native';
 import { ImageBackground } from 'react-native';
 import { handleDeviceOnboarding } from './src/services/api';
@@ -20,6 +21,7 @@ import DeviceInfo from 'react-native-device-info';
 import { useAuth } from './src/hooks/useAuth';
 import useAuthStore from './src/stores/auth.store';
 import { getQuestionsCount } from './src/services/api';
+import { useThemeStore } from './src/stores/theme.store';
 
 function App() {
   const getState = useAlertStore();
@@ -27,9 +29,16 @@ function App() {
   const [isReady, setIsReady] = useState(false);
   useEffect(() => {
     const checkHydration = async () => {
-      if (useAuthStore.persist.hasHydrated()) {
+      if (
+        useAuthStore.persist.hasHydrated() &&
+        useThemeStore.persist.hasHydrated()
+      ) {
         setIsReady(true);
       } else {
+        const themeSet = useThemeStore.persist.onFinishHydration(() => {
+          setIsReady(true);
+          themeSet();
+        });
         const unsub = useAuthStore.persist.onFinishHydration(() => {
           setIsReady(true);
           unsub(); //Stop listening.
@@ -75,7 +84,10 @@ function App() {
     >
       <SafeAreaProvider>
         <NavigationContainer>
-          <AppStack />
+          <AppLayout>
+            <AppStack />
+          </AppLayout>
+          {/* <AppStack /> */}
         </NavigationContainer>
 
         <Toast />
