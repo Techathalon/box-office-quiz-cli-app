@@ -1,8 +1,11 @@
-import React from 'react';
-import { View, Text, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, Image, Dimensions, TouchableOpacity } from 'react-native';
 import { View as MotiView } from 'moti';
 import { GameMode } from '../types/type';
 import { useTheme } from '../hooks/useTheme';
+import Feather from 'react-native-vector-icons/Feather';
+import Speech from '@mhpdev/react-native-speech';
+import { useState } from 'react';
 
 interface RenderQuestionProps {
   mode: GameMode;
@@ -13,7 +16,7 @@ interface RenderQuestionProps {
   maskedWord?: string;
   scrambledLetters?: string[];
 }
-
+const { width, height } = Dimensions.get('window');
 export default function RenderQuestion({
   mode,
   emojis,
@@ -24,6 +27,7 @@ export default function RenderQuestion({
   scrambledLetters,
 }: RenderQuestionProps) {
   const { theme } = useTheme();
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   // Shared container wrapper theme config
   const containerStyle = {
@@ -37,6 +41,39 @@ export default function RenderQuestion({
     elevation: 4,
   };
 
+  useEffect(() => {
+    return () => {
+      Speech.stop();
+    };
+  }, []);
+
+  // 2. Toggle Handler for Start / Stop Speech
+  const handleTextToSpeech = async () => {
+    try {
+      if (isSpeaking) {
+        // Stop current speech
+        await Speech.stop();
+        setIsSpeaking(false);
+        return;
+      }
+
+      if (dialogue) {
+        setIsSpeaking(true);
+        const result = await Speech.speak(dialogue, {
+          language: 'hi-IN',
+          rate: 0.9,
+          pitch: 1.0,
+        });
+        Speech.onFinish(({ id: eventId }) => {
+          if (eventId === result) setIsSpeaking(false);
+        });
+      }
+    } catch (error) {
+      console.error('Speech Error:', error);
+      setIsSpeaking(false);
+    }
+  };
+
   switch (mode) {
     case 'BLURRED_POSTER':
       return (
@@ -44,13 +81,14 @@ export default function RenderQuestion({
           {imageUrl ? (
             <Image
               source={{ uri: imageUrl }}
-              resizeMode="cover"
-              blurRadius={12}
+              resizeMode="contain"
+              blurRadius={4}
               style={{
-                width: 220,
-                height: 320,
-                borderRadius: 20,
+                width: width * 0.8,
+                height: height * 0.4,
+                borderRadius: width * 0.05,
               }}
+              className="rounded-2xl"
             />
           ) : (
             <View
@@ -81,18 +119,18 @@ export default function RenderQuestion({
       return (
         <View className="items-center p-6 rounded-3xl" style={containerStyle}>
           <MotiView
-            animate={{ scale: [1, 1.05, 1] }}
+            animate={{ scale: [1, 1.5, 1] }}
             transition={{
               type: 'timing',
-              duration: 2500,
+              duration: 1500,
               loop: true,
             }}
           >
-            <Text className="text-6xl mb-4 text-center">{emojis}</Text>
+            <Text className="text-6xl mb-4 p-3 text-center">{emojis}</Text>
           </MotiView>
 
           <Text
-            className="text-center font-bold text-sm"
+            className="text-[13px] text-center font-black uppercase tracking-widest"
             style={{ color: theme.text }}
           >
             Decode the emojis and guess the movie.
@@ -133,7 +171,7 @@ export default function RenderQuestion({
           </View>
 
           <Text
-            className="text-xs uppercase mt-4"
+            className="text-[13px] text-center font-black uppercase tracking-widest"
             style={{ color: theme.textSecondary }}
           >
             Arrange these letters to find the movie.
@@ -143,16 +181,45 @@ export default function RenderQuestion({
 
     case 'DIALOGUE_GURU':
       return (
-        <View className="p-6 rounded-3xl border-2" style={containerStyle}>
+        <View
+          className="p-6 rounded-3xl border-2 relative"
+          style={containerStyle}
+        >
+          {/* Dialogue Text */}
           <Text
-            className="text-xl text-center italic font-black mb-4"
+            className="text-xl text-center italic font-black mb-4 px-6"
             style={{ color: theme.text }}
           >
             "{dialogue}"
           </Text>
 
+          {/* Text-To-Speech Button */}
+          <TouchableOpacity
+            onPress={handleTextToSpeech}
+            activeOpacity={0.7}
+            className="flex-row items-center justify-center self-center px-4 py-2 rounded-full mb-4 border"
+            style={{
+              backgroundColor: isSpeaking ? theme.primary : theme.iconBg,
+              borderColor: theme.border,
+            }}
+          >
+            <Feather
+              name={isSpeaking ? 'volume-x' : 'volume-2'}
+              size={width * 0.05}
+              color={isSpeaking ? theme.lightskyprimary : theme.iconText}
+            />
+            <Text
+              className="font-bold text-[13px]  italic ml-2"
+              style={{
+                color: isSpeaking ? theme.lightskyprimary : theme.iconText,
+              }}
+            >
+              {isSpeaking ? 'Stop Listening' : 'Listen Dialogue'}
+            </Text>
+          </TouchableOpacity>
+
           <Text
-            className="text-xs text-center uppercase tracking-widest"
+            className="text-[13px] text-center font-black uppercase tracking-widest"
             style={{ color: theme.textSecondary }}
           >
             Which movie is this dialogue from?
@@ -171,7 +238,7 @@ export default function RenderQuestion({
           </Text>
 
           <Text
-            className="text-xs mt-2 uppercase"
+            className="text-[13px] text-center font-black uppercase tracking-widest"
             style={{ color: theme.textSecondary }}
           >
             Only one spelling is correct.
@@ -203,7 +270,7 @@ export default function RenderQuestion({
           </Text>
 
           <Text
-            className="text-xs mt-4 uppercase"
+            className="text-[13px] text-center font-black uppercase tracking-widest"
             style={{ color: theme.textSecondary }}
           >
             Fill in the missing letters.

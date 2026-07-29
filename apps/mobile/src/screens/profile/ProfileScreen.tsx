@@ -7,10 +7,12 @@ import CardPage from '../../components/CardPage';
 import { formatName } from '../../utils/game.util';
 import { Card } from '../../types/type';
 import EditProfileModal from '../../components/EditProfileModal';
+import useSound from '../../hooks/useSound';
 
 export default function ProfileScreen() {
   const { theme } = useTheme();
   const { user } = useAuth();
+  const { isMuted, setIsMuted } = useSound();
 
   // Modal visibility states
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -31,11 +33,15 @@ export default function ProfileScreen() {
     },
     {
       id: 2,
-      title: 'Sound',
-      desc: 'Adjust sound settings',
-      icon: 'volume',
+      title: 'Sound Effects',
+      desc: isMuted
+        ? 'Sound effects are turned off'
+        : 'Play audio during gameplay',
+      icon: isMuted ? 'volume-x' : 'volume-2',
       hasToggle: true,
       mode: 'column',
+      toggleValue: isMuted,
+      onToggleChange: setIsMuted,
     },
     {
       id: 3,
@@ -111,7 +117,6 @@ export default function ProfileScreen() {
         isModalVisible={isModalVisible}
         setIsModalVisible={setIsModalVisible}
       />
-      {/* EDIT PROFILE MODAL */}
     </ImageBackground>
   );
 }

@@ -1,71 +1,87 @@
 import { create } from 'zustand';
-//import TrackPlayer, { Track } from 'react-native-track-player';
+import { AudioContext, decodeAudioData } from 'react-native-audio-api';
 
-// Static map so Metro bundler statically resolves local sound assets
-// const AUDIO_ASSETS: Record<string, Track> = {
-//   'confetti_sound.mp3': {
-//     id: 'confetti_sound.mp3',
-//     url: require('../../assets/audio/confetti_sound.mp3'),
-//     title: 'Confetti Sound',
-//     artist: 'App Effects',
-//   },
-//   'level_up_sound.mp3': {
-//     id: 'level_up_sound.mp3',
-//     url: require('../../assets/audio/level_up_sound.mp3'),
-//     title: 'Level Up',
-//     artist: 'App Effects',
-//   },
-// };
+const AUDIO_ASSETS: Record<string, any> = {
+  'confetti_sound.mp3': require('../../assets/audio/confetti_sound.mp3'),
+  'level_up_sound.mp3': require('../../assets/audio/level_up_sound.mp3'),
+  'wrong_next_level_sound.mp3': require('../../assets/audio/wrong_next_level_sound.mp3'),
+  'coin_sound.mp3': require('../../assets/audio/coin_sound.mp3'),
+  'correct_sound.mp3': require('../../assets/audio/correct_sound.mp3'),
+  'correct.mp3': require('../../assets/audio/correct.mp3'),
+  'wrong_answer_sound.mp3': require('../../assets/audio/wrong_answer_sound.mp3'),
+};
 
 interface SoundState {
-  isPlayerReady: boolean;
-  setupPlayer: () => Promise<void>;
+  isMuted: boolean;
+  setIsMuted: (isMuted: boolean) => void;
+  activeContexts: Record<string, AudioContext>;
   playSound: (fileName: string) => Promise<void>;
-  stopSound: () => Promise<void>;
+  stopSound: (fileName: string) => Promise<void>;
 }
 
 export const useSoundStore = create<SoundState>((set, get) => ({
-  isPlayerReady: false,
-
-  // Call this once during app startup
-  setupPlayer: async () => {
-    if (get().isPlayerReady) return;
-    try {
-      //await TrackPlayer.setupPlayer();
-      set({ isPlayerReady: true });
-    } catch (error) {
-      console.error('Failed to initialize TrackPlayer:', error);
-    }
-  },
+  isMuted: false,
+  setIsMuted: isMuted => set(() => ({ isMuted })),
+  activeContexts: {},
 
   playSound: async (fileName: string) => {
-    // const trackConfig = AUDIO_ASSETS[fileName];
-    // if (!trackConfig) {
-    //   console.warn(`Sound asset "${fileName}" not found in AUDIO_ASSETS map.`);
-    //   return;
-    // }
+    const asset = AUDIO_ASSETS[fileName];
+    if (!asset) return;
+    if (get().isMuted) return;
+
+    // Halt previous instance allocations cleanly
+    await get().stopSound(fileName);
 
     try {
-      // Ensure player setup is complete
-      if (!get().isPlayerReady) {
-        await get().setupPlayer();
-      }
+      // 1. Initialise a raw native Web Audio graph context thread
+      const ctx = new AudioContext({
+        sampleRate: 48000,
+      });
 
-      // Clear existing tracks, load requested sound, and play immediately
-      // await TrackPlayer.reset();
-      // await TrackPlayer.add([trackConfig]);
-      // await TrackPlayer.play();
+      // 2. FIXED: Decode the required local asset ID directly using the library utility
+      // This bypasses the buggy fetch() network layer entirely
+      const audioBuffer = await decodeAudioData(asset);
+
+      // 3. Mount an internal buffer trigger source node element
+      const source = ctx.createBufferSource(); //
+      source.buffer = audioBuffer; //
+      source.connect(ctx.destination); //
+
+      set(state => ({
+        activeContexts: { ...state.activeContexts, [fileName]: ctx },
+      }));
+
+      // 4. Play the sound instantly
+      source.start(0); //
+
+      // Clean context allocations automatically when sound ends
+      source.onEnded = () => {
+        ctx.close(); // Frees up C++/Java audio layer memory leaks
+        set(state => {
+          const next = { ...state.activeContexts };
+          delete next[fileName];
+          return { activeContexts: next };
+        });
+      };
     } catch (error) {
-      console.error(`Error playing sound ${fileName}:`, error);
+      console.error(`Audio playback crashed for asset "${fileName}":`, error);
     }
   },
 
-  stopSound: async () => {
-    try {
-      // await TrackPlayer.stop();
-      // await TrackPlayer.reset();
-    } catch (error) {
-      console.error('Error stopping track playback:', error);
+  stopSound: async (fileName: string) => {
+    const ctx = get().activeContexts[fileName];
+    if (ctx) {
+      try {
+        // Shuts down the local native audio thread timeline instantly
+        await ctx.close();
+      } catch (e) {
+        console.error(e);
+      }
+      set(state => {
+        const next = { ...state.activeContexts };
+        delete next[fileName];
+        return { activeContexts: next };
+      });
     }
   },
 }));

@@ -103,7 +103,7 @@ const WelcomePage: React.FC = () => {
           </TouchableOpacity>
 
           <Text
-            className="  mt-4 tracking-wider uppercase text-md font-semibold"
+            className="mt-4 tracking-wider uppercase text-md font-semibold"
             style={{ color: theme.text || '#C68A4C' }}
           >
             Are you ready to test your movie brain?

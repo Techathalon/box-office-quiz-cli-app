@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, Dimensions } from 'react-native';
 import { MotiView, MotiText } from 'moti';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { useTheme } from '../hooks/useTheme';
+import useSound from '../hooks/useSound';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -21,11 +22,12 @@ export const CoinRewardModal: React.FC<CoinRewardModalProps> = ({
   onClose,
 }) => {
   const { theme } = useTheme();
+  const { playSound, stopSound } = useSound();
   const [leftX, setLeftX] = useState(0);
   const [rightX, setRightX] = useState(0);
   const [displayCoins, setDisplayCoins] = useState(existCoins);
   const travelDistance = rightX - leftX;
-  const coinsArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const coinsArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   const handleIncrement = () => {
     if (!isVisible) {
       setDisplayCoins(existCoins);
@@ -50,6 +52,23 @@ export const CoinRewardModal: React.FC<CoinRewardModalProps> = ({
 
     return () => clearTimeout(timer);
   };
+  useEffect(() => {
+    let soundInterval: any;
+    if (isVisible) {
+      //playSound('coin_sound.mp3');
+      soundInterval = setInterval(() => {
+        stopSound('coin_sound.mp3');
+        playSound('coin_sound.mp3');
+      }, 1000);
+    } else if (!isVisible) {
+      stopSound('level_up_sound.mp3');
+      clearInterval(soundInterval);
+    }
+    return () => {
+      clearInterval(soundInterval);
+      stopSound('level_up_sound.mp3');
+    };
+  });
 
   return (
     <Modal visible={isVisible} transparent animationType="fade">
@@ -104,10 +123,9 @@ export const CoinRewardModal: React.FC<CoinRewardModalProps> = ({
               >
                 {coinsArray.map(index => {
                   const delay = 400 + index * 200;
-
                   return (
                     <MotiView
-                      key={index}
+                      key={`flying-coin-animation-key-${index}`}
                       from={{
                         translateX: 0,
                         translateY: 0,
@@ -122,7 +140,7 @@ export const CoinRewardModal: React.FC<CoinRewardModalProps> = ({
                       }}
                       transition={{
                         type: 'timing',
-                        duration: 650,
+                        duration: 600,
                         delay: delay,
                       }}
                       onDidAnimate={(key, finished) => {
@@ -136,6 +154,7 @@ export const CoinRewardModal: React.FC<CoinRewardModalProps> = ({
                       style={{ position: 'absolute' }}
                     >
                       <MaterialIcons
+                        key={`flying-coin-icon-${index}`}
                         name="monetization-on"
                         size={28}
                         color="#FFD700"
@@ -147,23 +166,20 @@ export const CoinRewardModal: React.FC<CoinRewardModalProps> = ({
             )}
             <MotiView
               onLayout={e => setRightX(e.nativeEvent.layout.x)}
-              // from={{ opacity: 0, scale: 0.2 }}
-              // animate={{
-              //   opacity: 1,
-              //   scale: 1,
-              // }}
-              // transition={{ type: 'spring', damping: 10 }}
               className="items-center z-20"
             >
               <View className="w-20 h-20 rounded-full bg-amber-500/20 border border-amber-400 items-center justify-center mb-1 shadow-lg shadow-amber-500/40">
                 <MaterialIcons
-                  key={displayCoins}
+                  key={`wallet-icon-${displayCoins}`}
                   name="monetization-on"
                   size={SCREEN_WIDTH * 0.09}
                   color={theme.primaryYellow || '#111827'}
                 />
               </View>
-              <MotiText className="text-white font-black text-[14px] tracking-wider">
+              <MotiText
+                key={`wallet-text-${displayCoins}`}
+                className="text-white font-black text-[14px] tracking-wider"
+              >
                 {displayCoins}
               </MotiText>
             </MotiView>

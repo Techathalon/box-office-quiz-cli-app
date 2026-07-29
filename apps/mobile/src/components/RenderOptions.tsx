@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { View as MotiView } from 'moti';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useTheme } from '../hooks/useTheme';
+import useSound from '../hooks/useSound';
 
 interface RenderOptionsProps {
   mode: GameMode;
@@ -28,6 +29,7 @@ export default function RenderOptions({
   isEvaluated,
   selectedAnswer,
 }: RenderOptionsProps) {
+  const { playSound, stopSound } = useSound();
   const [selectedLetters, setSelectedLetters] = useState<string[]>([]);
   const [availableLetters, setAvailableLetters] = useState<string[]>([]);
   const [missingIndices, setMissingIndices] = useState<number[]>([]);
@@ -48,7 +50,17 @@ export default function RenderOptions({
       setMissingIndices(indices);
     }
   }, [scrambledLetters, mode, correctAnswer, maskedWord, displayMask]);
-
+  useEffect(() => {
+    // if (selectedAnswer && selectedAnswer !== correctAnswer) {
+    //   playSound('wrong_answer_sound.mp3');
+    // } else {
+    //   playSound('correct.mp3');
+    // }
+    return () => {
+      stopSound('correct.mp3');
+      stopSound('wrong_answer_sound.mp3');
+    };
+  });
   const handleMissingLetterPress = (letter: string, index: number) => {
     if (isEvaluated || selectedLetters.length >= missingIndices.length) return;
 
@@ -71,6 +83,11 @@ export default function RenderOptions({
         .join('');
 
       handleOptionPress(finalGuess);
+      if (finalGuess === correctAnswer) {
+        playSound('correct.mp3');
+      } else {
+        playSound('wrong_answer_sound.mp3');
+      }
     }
   };
 
@@ -230,6 +247,11 @@ export default function RenderOptions({
 
     if (updatedLetters.length === correctAnswer.length) {
       handleOptionPress(updatedLetters.join(''));
+      if (updatedLetters.join('') !== correctAnswer) {
+        playSound('wrong_answer_sound.mp3');
+      } else {
+        playSound('correct.mp3');
+      }
     }
   };
 
@@ -383,7 +405,14 @@ export default function RenderOptions({
               <TouchableOpacity
                 activeOpacity={0.7}
                 disabled={isEvaluated}
-                onPress={() => handleOptionPress(option)}
+                onPress={() => {
+                  handleOptionPress(option);
+                  if (option === correctAnswer) {
+                    playSound('correct.mp3');
+                  } else {
+                    playSound('wrong_answer_sound.mp3');
+                  }
+                }}
                 className="w-full py-4 px-6 rounded-2xl mb-3 flex-row justify-between items-center"
                 style={{
                   borderWidth: 2,

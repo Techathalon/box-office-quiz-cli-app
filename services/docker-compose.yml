@@ -8,9 +8,11 @@ services:
     env_file:
       - .env
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - '${POSTGRES_PORT}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bollywood_net
 
   pgadmin:
     image: dpage/pgadmin4:7.7
@@ -19,12 +21,38 @@ services:
     env_file:
       - .env
     environment:
-      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_EMAIL}"
-      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_PASSWORD}"
+      PGADMIN_DEFAULT_EMAIL: '${PGADMIN_EMAIL}'
+      PGADMIN_DEFAULT_PASSWORD: '${PGADMIN_PASSWORD}'
     ports:
-      - "${PGADMIN_PORT}:80"
+      - '${PGADMIN_PORT}:80'
     depends_on:
       - postgres
+    networks:
+      - bollywood_net
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - '${MINIO_PORT}:9000'
+      - '${MINIO_CONSOLE_PORT}:9001'
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bollywood_net
 
 volumes:
   postgres_data:
+  minio_data:
+networks:
+  bollywood_net:
+    driver: bridge

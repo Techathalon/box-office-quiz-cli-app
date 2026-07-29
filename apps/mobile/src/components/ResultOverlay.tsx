@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,11 +12,15 @@ import {
 import { View as MotiView } from 'moti';
 import { useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
+import { getUserProgress } from '../services/api';
 import { CoinRewardModal } from './CoinRewardModal';
 import { useTheme } from '../hooks/useTheme';
+import { calculateUserRewards } from '../utils/game.util';
+import { useAuth } from '../hooks/useAuth';
 // 1. Switch import to the infinite streaming package
 import Confetti from 'react-native-confetti';
 import useSound from '../hooks/useSound';
+import { UserProgress } from '../types/type';
 
 const { width } = Dimensions.get('window');
 
@@ -36,34 +40,86 @@ export default function ResultOverlay({
   onNext,
 }: ResultOverlayProps) {
   const { theme } = useTheme();
+  const { user } = useAuth();
   const confettiRef = useRef<any>(null);
   const navigation = useNavigation();
   const nextLevel = currentLevel + 1;
   const { playSound, stopSound } = useSound();
   const [showCoinModal, setShowCoinModal] = React.useState(false);
+  const [userProgress, setUserProgress] = React.useState<UserProgress>();
 
   useEffect(() => {
     let confettiInterval: any;
+    let soundInterval: any;
     const currentConfetti = confettiRef.current;
 
     // 2. Wait until the modal is actually visible before kicking off the loop
     if (isVisible && hasWon && currentConfetti) {
       currentConfetti.startConfetti();
       playSound('confetti_sound.mp3');
+      soundInterval = setInterval(() => {
+        if (showCoinModal) {
+          clearInterval(soundInterval);
+          stopSound('confetti_sound.mp3');
+        }
 
+        stopSound('confetti_sound.mp3');
+        playSound('confetti_sound.mp3');
+      }, 9000);
       confettiInterval = setInterval(() => {
+        if (showCoinModal) {
+          clearInterval(confettiInterval);
+          stopSound('confetti_sound.mp3');
+        }
+
         currentConfetti.startConfetti();
       }, 1000);
+    } else if (isVisible && !hasWon) {
+      playSound('wrong_next_level_sound.mp3');
     }
 
     return () => {
       if (confettiInterval) {
         clearInterval(confettiInterval);
+        stopSound('confetti_sound.mp3');
+      }
+      if (soundInterval || showCoinModal) {
+        clearInterval(soundInterval);
+        stopSound('wrong_next_level_sound.mp3');
       }
       currentConfetti?.stopConfetti();
-      stopSound();
+      stopSound('confetti_sound.mp3');
+      stopSound('wrong_next_level_sound.mp3');
     };
-  }, [isVisible, hasWon, playSound, stopSound]);
+  }, [isVisible, hasWon, playSound, stopSound, showCoinModal]);
+  useEffect(() => {
+    if (!user || !isVisible || !hasWon) {
+      return;
+    }
+    const fetchUserProgress = async () => {
+      try {
+        if (isVisible && hasWon) {
+          const res = await getUserProgress(user?.id as number);
+          setUserProgress(res.userProgress);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchUserProgress();
+  }, [user, isVisible, hasWon]);
+  const rewards = useMemo(() => {
+    if (!userProgress) {
+      return;
+    }
+    if (hasWon) {
+      return calculateUserRewards(
+        userProgress?.wonCount - 1 || 0,
+        userProgress?.lostCount || 0,
+      );
+    }
+  }, [userProgress, hasWon]);
+
   const handleNext = () => {
     if (hasWon) {
       setShowCoinModal(true);
@@ -75,6 +131,7 @@ export default function ResultOverlay({
     setShowCoinModal(false);
     onNext();
   };
+  console.log('rewards data form result overlay:', rewards);
 
   return (
     <Modal
@@ -88,7 +145,7 @@ export default function ResultOverlay({
       <ImageBackground
         source={require('../../assets/background_bg.png')}
         className="flex-1 bg-black/25"
-        style={{ ...StyleSheet.absoluteFill }}
+        style={StyleSheet.absoluteFill}
         resizeMode="cover"
       >
         <View className="flex-1 justify-start items-center">
@@ -251,15 +308,17 @@ export default function ResultOverlay({
             </View>
           </MotiView>
         </View>
-        <CoinRewardModal
-          isVisible={showCoinModal}
-          existCoins={100}
-          addCoins={10}
-          onClose={() => handleCloseCoinModal()}
-        />
+        {rewards && hasWon && showCoinModal && (
+          <CoinRewardModal
+            isVisible={showCoinModal}
+            existCoins={rewards.coins}
+            addCoins={10}
+            onClose={() => handleCloseCoinModal()}
+          />
+        )}
 
         {/* 3. Replaced ConfettiCannon component with the stream component */}
-        {hasWon && (
+        {hasWon && !showCoinModal && (
           <Confetti
             ref={confettiRef}
             confettiCount={100}
