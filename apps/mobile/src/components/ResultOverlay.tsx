@@ -21,6 +21,7 @@ import Confetti from 'react-native-confetti';
 import useSound from '../hooks/useSound';
 import { UserProgress } from '../types/type';
 import AppLayout from './AppLayout';
+import { styles } from './style';
 
 const { width } = Dimensions.get('window');
 
@@ -144,16 +145,16 @@ export default function ResultOverlay({
     >
       <AppLayout>
         <View className="flex-1 " style={StyleSheet.absoluteFill}>
-          <View className="flex-1 justify-start items-center">
+          <View className="flex-1 w-full justify-center items-center">
             <MotiView
               from={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ type: 'timing', duration: 250 }}
-              className="py-12 gap-9 px-9 items-center"
+              className="py-12 gap-9 px-9 items-center w-fulljustify-center"
             >
               {/* --- Top Decorative Status Indicator Area --- */}
-              <View className="w-full items-center mt-28">
+              <View className="w-full items-center mt-5">
                 <MotiView
                   from={{ scale: 0.4, rotate: '-10deg' }}
                   animate={{ scale: 1, rotate: '0deg' }}
@@ -176,7 +177,7 @@ export default function ResultOverlay({
               </View>
 
               {/* --- Center Evaluation Content Module --- */}
-              <View className="mt-10 gap-12">
+              <View className="w-full items-center mt-5 gap-9">
                 <MotiView
                   from={{ opacity: 0, translateY: 20 }}
                   animate={{ opacity: 1, translateY: 0 }}
@@ -185,7 +186,10 @@ export default function ResultOverlay({
                 >
                   <View className="flex items-center justify-between w-full px-2 gap-2">
                     <View>
-                      <Text className="text-gray-400 text-xs font-bold tracking-[0.3em] uppercase mb-1">
+                      <Text
+                        className="text-gray-400  font-bold tracking-[0.1em] uppercase mb-1"
+                        style={styles.iconText}
+                      >
                         ★ Lights Camera Action ★
                       </Text>
                     </View>
@@ -197,18 +201,23 @@ export default function ResultOverlay({
                         >
                           <Feather
                             name="award"
-                            size={width * 0.05}
-                            color={theme.iconText}
+                            style={[styles.iconSize, { color: theme.iconText }]}
                           />
                         </View>
                         <View>
                           <Text
-                            className="text-[14px] font-black tracking-tighter text-center uppercase"
-                            style={{ color: theme.primaryYellow || '#FFCC00' }}
+                            className="font-black tracking-tighter text-center uppercase"
+                            style={[
+                              styles.littleLargeTitleSize,
+                              { color: theme.primaryYellow || '#FFCC00' },
+                            ]}
                           >
                             Finished
                           </Text>
-                          <Text className="text-[13px] font-black text-white">
+                          <Text
+                            className="font-black text-white"
+                            style={styles.titleSize}
+                          >
                             Level {currentLevel}
                           </Text>
                         </View>
@@ -233,12 +242,18 @@ export default function ResultOverlay({
                         </View>
                         <View>
                           <Text
-                            className="text-[14px] font-black tracking-tighter text-center uppercase"
-                            style={{ color: theme.primaryYellow || '#FFCC00' }}
+                            className=" font-black tracking-tighter text-center uppercase"
+                            style={[
+                              styles.littleLargeTitleSize,
+                              { color: theme.primaryYellow || '#FFCC00' },
+                            ]}
                           >
                             Next Target
                           </Text>
-                          <Text className="text-[13px] font-black text-white">
+                          <Text
+                            className=" font-black text-white"
+                            style={styles.titleSize}
+                          >
                             Level {nextLevel}
                           </Text>
                         </View>
@@ -246,12 +261,18 @@ export default function ResultOverlay({
                     </View>
                     {!hasWon && (
                       <View className="w-full mt-4 border border-zinc-700/50 rounded-2xl p-4 bg-zinc-950/40 items-center">
-                        <Text className="text-[12px] text-gray-400 font-black tracking-widest uppercase mb-1.5">
+                        <Text
+                          className=" text-gray-400 font-black tracking-widest uppercase mb-1.5"
+                          style={styles.titleSize}
+                        >
                           Correct Sequence
                         </Text>
                         <Text
-                          className="text-base font-black text-center px-1"
-                          style={{ color: theme.lightskyprimary || '#0EA5E9' }}
+                          className=" font-black text-center px-1"
+                          style={[
+                            styles.titleSize,
+                            { color: theme.lightskyprimary || '#0EA5E9' },
+                          ]}
                         >
                           "{correctAnswer}"
                         </Text>
@@ -265,21 +286,23 @@ export default function ResultOverlay({
                   from={{ opacity: 0, translateY: 30 }}
                   animate={{ opacity: 1, translateY: 0 }}
                   transition={{ type: 'spring', delay: 400 }}
-                  className="w-full flex-row justify-between items-center px-1"
+                  className="w-full flex-row  items-center gap-3"
                 >
                   <TouchableOpacity
                     activeOpacity={0.8}
                     onPress={() => navigation.goBack()}
-                    className="w-[47%] py-4 rounded-2xl items-center justify-center flex-row shadow-sm "
+                    className="flex-1 py-4 rounded-2xl items-center justify-center flex-row shadow-sm "
                     style={{ backgroundColor: theme.lightskyprimary }}
                   >
                     <Feather
                       name="grid"
-                      size={width * 0.045}
-                      color="#4B5563"
+                      style={[styles.iconSize, { color: '#4B5563' }]}
                       className="mr-2"
                     />
-                    <Text className="text-zinc-600 font-black text-[14px] tracking-wide uppercase ml-1">
+                    <Text
+                      className="text-zinc-600 font-black  tracking-wide uppercase ml-1"
+                      style={styles.littleLargeTitleSize}
+                    >
                       Levels
                     </Text>
                   </TouchableOpacity>
@@ -287,16 +310,18 @@ export default function ResultOverlay({
                   <TouchableOpacity
                     activeOpacity={0.8}
                     onPress={handleNext}
-                    className="w-[47%] py-4 rounded-2xl items-center justify-center flex-row shadow-md "
+                    className="flex-1 py-4 rounded-2xl items-center justify-center flex-row shadow-md "
                     style={{ backgroundColor: theme.primary }}
                   >
-                    <Text className="text-white font-black text-[14px] tracking-wide mr-1 uppercase">
+                    <Text
+                      className="text-white font-black  tracking-wide mr-1 uppercase"
+                      style={styles.littleLargeTitleSize}
+                    >
                       Level {nextLevel}
                     </Text>
                     <Feather
                       name="arrow-right"
-                      size={width * 0.045}
-                      color="#FFFFFF"
+                      style={[styles.iconSize, { color: theme.white }]}
                       strokeWidth={3}
                     />
                   </TouchableOpacity>

@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Dimensions,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import multiavatar from '@multiavatar/multiavatar/esm';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -25,7 +19,7 @@ import { useNavigation } from '@react-navigation/native';
 import { View as MotiView } from 'moti';
 import { getUserProgress } from '../../services/api';
 import { useFocusEffect } from '@react-navigation/native';
-const { width } = Dimensions.get('window');
+import { styles } from '../../components/style';
 
 export default function HomeScreen() {
   const navigation =
@@ -162,76 +156,79 @@ export default function HomeScreen() {
   }
   return (
     <SafeAreaView className="absolute inset-0">
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 120 }}
-      >
-        <View className="px-4 pt-4 flex-row justify-between items-center">
-          <View className="flex-row items-center space-x-3">
+      <View className="px-4 pt-4 flex-row justify-between items-center">
+        <View className="flex-row items-center space-x-3">
+          <View
+            className="w-14 h-14 rounded-full border-2 items-center justify-center bg-white"
+            style={{ borderColor: theme.border }}
+          >
+            <Text className="text-2xl">
+              <SvgXml xml={svgCode} />
+            </Text>
+          </View>
+        </View>
+        {userProgress && (
+          <View className="flex-row items-center space-x-2">
             <View
-              className="w-14 h-14 rounded-full border-2 items-center justify-center bg-white"
-              style={{ borderColor: theme.border }}
+              className="flex-row items-center px-2.5 py-1.5 rounded-full border mr-1"
+              style={{
+                backgroundColor: theme.card,
+                borderColor: theme.border,
+              }}
             >
-              <Text className="text-2xl">
-                <SvgXml xml={svgCode} />
+              <FontAwesome5
+                name="coins"
+                //size={width * 0.05}
+                style={styles.iconSize}
+                color="#EAB308"
+              />
+              <Text
+                className=" font-black ml-1"
+                style={[styles.iconText, { color: theme.primaryYellowDark }]}
+              >
+                {rewards.coins} Coins
+              </Text>
+            </View>
+
+            <View
+              className="flex-row items-center px-2.5 py-1.5 rounded-full border"
+              style={{
+                backgroundColor: theme.card,
+                borderColor: rewards.awardBadgeColor,
+              }}
+            >
+              {rewards.awardTitle === 'Diamond' ||
+              rewards.awardTitle === 'Novice' ? (
+                <MaterialCommunityIcons
+                  name={rewards.iconName}
+                  //size={width * 0.05}
+                  style={styles.iconSize}
+                  color={rewards.awardBadgeColor}
+                />
+              ) : (
+                <FontAwesome5
+                  name={rewards.iconName}
+                  //size={width * 0.05}
+                  style={styles.iconSize}
+                  color={rewards.awardBadgeColor}
+                />
+              )}
+              <Text
+                className=" font-bold ml-1"
+                style={[styles.iconText, { color: theme.text }]}
+              >
+                {rewards.awardTitle} ({userProgress.wonCount} Wins)
               </Text>
             </View>
           </View>
-          {userProgress && (
-            <View className="flex-row items-center space-x-2">
-              <View
-                className="flex-row items-center px-2.5 py-1.5 rounded-full border mr-1"
-                style={{
-                  backgroundColor: theme.card,
-                  borderColor: theme.border,
-                }}
-              >
-                <FontAwesome5
-                  name="coins"
-                  size={width * 0.05}
-                  color="#EAB308"
-                />
-                <Text
-                  className="text-[12px] font-black ml-1"
-                  style={{ color: theme.primaryYellowDark }}
-                >
-                  {rewards.coins} Coins
-                </Text>
-              </View>
-
-              <View
-                className="flex-row items-center px-2.5 py-1.5 rounded-full border"
-                style={{
-                  backgroundColor: theme.card,
-                  borderColor: rewards.awardBadgeColor,
-                }}
-              >
-                {rewards.awardTitle === 'Diamond' ||
-                rewards.awardTitle === 'Novice' ? (
-                  <MaterialCommunityIcons
-                    name={rewards.iconName}
-                    size={width * 0.05}
-                    color={rewards.awardBadgeColor}
-                  />
-                ) : (
-                  <FontAwesome5
-                    name={rewards.iconName}
-                    size={width * 0.05}
-                    color={rewards.awardBadgeColor}
-                  />
-                )}
-                <Text
-                  className="text-[13px] font-bold ml-1"
-                  style={{ color: theme.text }}
-                >
-                  {rewards.awardTitle} ({userProgress.wonCount} Wins)
-                </Text>
-              </View>
-            </View>
-          )}
-        </View>
+        )}
+      </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 80 }}
+      >
         <View
-          className="m-4 rounded-3xl p-6 relative overflow-hidden  border"
+          className="m-4 rounded-3xl p-6 relative overflow-hidden flex-[30] border"
           style={{ borderColor: theme.border, backgroundColor: theme.card }}
         >
           <View className="w-2/3 pr-2">
@@ -240,31 +237,31 @@ export default function HomeScreen() {
               style={{ backgroundColor: theme.iconBg }}
             >
               <Text
-                className="text-[13px] font-bold tracking-wider  uppercase"
-                style={{ color: theme.iconText || '#F59E0B' }}
+                className=" font-bold tracking-wider  uppercase"
+                style={[
+                  styles.titleSize,
+                  { color: theme.iconText || '#F59E0B' },
+                ]}
               >
                 {formatName(user?.name || '')}
               </Text>
             </View>
             <Text
-              className="text-2xl font-black mb-1"
-              style={{ color: theme.text }}
+              className=" font-black mb-1"
+              style={[styles.largeTitleSize, { color: theme.text }]}
             >
               Ready for Bollywood Trivia?
             </Text>
             <Text
-              className="text-[14px] font-bold leading-relaxed"
-              style={{ color: theme.textSecondary }}
+              className=" font-bold leading-relaxed"
+              style={[styles.descSize, { color: theme.textSecondary }]}
             >
               Test your cinematic knowledge across 6 custom game modes!
             </Text>
           </View>
 
-          <View className="absolute right-2 top-2 bottom-2 items-center justify-center">
-            <View
-              className="w-28 h-28  rounded-full items-center justify-center border "
-              style={{ borderColor: theme.border }}
-            >
+          <View className="absolute right-0 top-2 bottom-2 items-center justify-center">
+            <View className="w-[50%] h-[50%]  rounded-full items-center justify-center  ">
               <Text className="text-6xl animate-bounce">
                 <SvgXml xml={svgCode} />
               </Text>
@@ -275,8 +272,8 @@ export default function HomeScreen() {
         {/* --- GAME MODES CONTAINER HEADER --- */}
         <View className="px-4 pt-2 pb-2 flex-row justify-between items-center">
           <Text
-            className="text-lg font-extrabold"
-            style={{ color: theme.text }}
+            className=" font-extrabold"
+            style={[styles.titleSize, { color: theme.text }]}
           >
             Choose Game Mode
           </Text>
@@ -288,13 +285,14 @@ export default function HomeScreen() {
             }}
           >
             <Text
-              className="text-[13px] font-black"
-              style={{ color: theme.iconText }}
+              className="font-black"
+              style={[styles.iconText, { color: theme.iconText }]}
             >
               6 Modes Active
             </Text>
           </View>
         </View>
+
         <View className="px-4 flex-row flex-wrap justify-between">
           {gameModes.map(mode => (
             <MotiView

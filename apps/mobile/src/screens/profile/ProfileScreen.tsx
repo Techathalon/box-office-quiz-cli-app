@@ -18,6 +18,7 @@ import { SvgXml } from 'react-native-svg';
 import multiavatar from '@multiavatar/multiavatar/esm';
 import { ThemeMode } from '../../stores/theme.store';
 import Feather from 'react-native-vector-icons/Feather';
+import { styles } from '../../components/style';
 
 const { width } = Dimensions.get('window');
 export default function ProfileScreen() {
@@ -74,55 +75,65 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View className="flex-1">
-      <ScrollView
-        className="absolute inset-0 "
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
-        {/* HEADER HERO AREA */}
-        <View className="relative h-48 justify-end items-center pb-6">
-          <View className="absolute top-0 left-0 right-0 h-40 rounded-b-[40px] bg-zinc-900/55" />
+    <View className="absolute inset-0 ">
+      {/* HEADER HERO AREA */}
+      <View className="relative h-[30%] justify-end items-center pb-6">
+        <View className="absolute top-0 left-0 right-0 h-[90%] rounded-b-[40px] bg-zinc-900/55" />
 
-          {/* Avatar Ring Container */}
-          <MotiView
-            from={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'timing', duration: 800 }}
-            className="z-10 rounded-full p-1.5 border-4"
+        {/* Avatar Ring Container */}
+        <MotiView
+          from={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'timing', duration: 800 }}
+          style={{
+            borderRadius: (width * 0.18) / 2 + 6,
+            padding: 6,
+            borderWidth: 4,
+            borderColor: theme.primaryYellow,
+            backgroundColor: theme.surface,
+            shadowColor: theme.shadow,
+            shadowOffset: { width: 0, height: 10 },
+            shadowOpacity: 0.3,
+            shadowRadius: 15,
+            elevation: 8,
+          }}
+        >
+          <View
             style={{
-              borderColor: theme.primaryYellow,
-              backgroundColor: theme.surface,
-              shadowColor: theme.shadow,
-              shadowOffset: { width: 0, height: 10 },
-              shadowOpacity: 0.3,
-              shadowRadius: 15,
-              elevation: 8,
+              width: width * 0.18,
+              height: width * 0.18,
+              borderRadius: (width * 0.18) / 2,
+              backgroundColor: '#FFF2E0',
+              justifyContent: 'center',
+              alignItems: 'center',
+              overflow: 'hidden',
             }}
           >
-            <View className="w-24 h-24 rounded-full justify-center items-center bg-[#FFF2E0]">
-              <Text style={{ fontSize: 56 }} className="animate-bounce">
-                <SvgXml xml={svgCode} />
-              </Text>
-            </View>
-          </MotiView>
-        </View>
+            <SvgXml xml={svgCode} width={width * 0.18} height={width * 0.18} />
+          </View>
+        </MotiView>
+      </View>
 
-        {/* USER NAME & ID */}
-        <View className="items-center px-6 mb-6">
-          <Text
-            className="text-2xl font-black tracking-wide text-center"
-            style={{ color: theme.secondary }}
-          >
-            {formatName(user?.name || 'Guest')}
-          </Text>
-          <Text
-            className="text-md font-bold italic tracking-wider mt-1 opacity-80"
-            style={{ color: theme.success }}
-          >
-            ★ Lights Camera Action ★
-          </Text>
-        </View>
+      {/* USER NAME & ID */}
+      <View className="items-center px-6 mb-6">
+        <Text
+          className="font-black tracking-wide text-center"
+          style={[styles.titleSize, { color: theme.primaryYellowDark }]}
+        >
+          {formatName(user?.name || 'Guest')}
+        </Text>
+        <Text
+          className=" font-bold italic tracking-wider mt-1 opacity-80"
+          style={[styles.titleSize, { color: theme.success }]}
+        >
+          ★ Lights Camera Action ★
+        </Text>
+      </View>
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 60 }}
+      >
         <View className="flex items-center mx-6 mb-3">
           <View
             className="w-full felx-col p-2 rounded-2xl border"
@@ -133,18 +144,17 @@ export default function ProfileScreen() {
           >
             <View className=" flex-row items-center ml-4 my-2">
               <View
-                className="w-9 h-9 rounded-xl items-center justify-center mr-2"
+                className=" rounded-xl items-center justify-center p-2 mr-2"
                 style={{ backgroundColor: theme.iconBg }}
               >
                 <Feather
                   name={mode === 'light' ? 'sun' : 'moon'}
-                  size={width * 0.05}
-                  color={theme.iconText || '#FFFFFF'}
+                  style={[styles.iconSize, { color: theme.iconText }]}
                 />
               </View>
               <Text
-                className="text-[13px] font-black tracking-wide uppercase"
-                style={{ color: theme.text }}
+                className=" font-black tracking-wide uppercase"
+                style={[styles.titleSize, { color: theme.text }]}
               >
                 Customize App Appearance
               </Text>
@@ -167,21 +177,31 @@ export default function ProfileScreen() {
                   >
                     <Feather
                       name={option.icon}
-                      size={18}
+                      className="mr-2"
+                      style={[
+                        styles.iconSize,
+                        {
+                          color: isActive
+                            ? theme.white || '#0EA5E9'
+                            : theme.primary || '#6B7280',
+                        },
+                      ]}
                       color={
                         isActive
                           ? theme.white || '#0EA5E9'
                           : theme.primary || '#6B7280'
                       }
-                      style={{ marginRight: 6 }}
                     />
                     <Text
-                      className="text-sm font-bold tracking-wide"
-                      style={{
-                        color: isActive
-                          ? theme.white || '#0EA5E9'
-                          : theme.primary || '#6B7280',
-                      }}
+                      className=" font-bold tracking-wide"
+                      style={[
+                        styles.titleSize,
+                        {
+                          color: isActive
+                            ? theme.white || '#0EA5E9'
+                            : theme.primary || '#6B7280',
+                        },
+                      ]}
                     >
                       {option.label}
                     </Text>
@@ -192,18 +212,18 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        <View className="flex items-center mx-3">
+        <View className="flex items-center mx-2">
           {settingCards.map(card => (
             <CardPage key={card.id} mode={card} />
           ))}
         </View>
-        {isModalVisible && (
-          <EditProfileModal
-            isModalVisible={isModalVisible}
-            setIsModalVisible={setIsModalVisible}
-          />
-        )}
       </ScrollView>
+      {isModalVisible && (
+        <EditProfileModal
+          isModalVisible={isModalVisible}
+          setIsModalVisible={setIsModalVisible}
+        />
+      )}
     </View>
   );
 }

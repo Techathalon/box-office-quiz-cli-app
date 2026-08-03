@@ -8,6 +8,7 @@ import {
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Feather';
 import { useTheme } from '../hooks/useTheme';
+import { styles } from './style';
 
 export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const { theme } = useTheme();
@@ -27,12 +28,11 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     >
       {/* Main Navigation Pill Bar */}
       <View
-        className="flex-1 flex-row items-center justify-between rounded-full h-14 px-4 border"
+        className="flex-1 flex-row items-center justify-between rounded-full  px-4 border"
         style={{
           backgroundColor: theme.lightskyprimary,
           borderColor: theme.lightskyprimary,
           borderWidth: 1,
-          //opacity: 0.95,
           ...Platform.select({
             ios: {
               shadowColor: theme.black,
@@ -75,7 +75,7 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
               accessibilityState={isFocused ? { selected: true } : {}}
               onPress={onPress}
               activeOpacity={0.7}
-              className="flex-1 items-center justify-center h-11 rounded-full m-1"
+              className="flex-1 items-center justify-center p-2  h-[70%] rounded-full m-2"
               style={{
                 backgroundColor: isFocused
                   ? `${theme.primary}`
@@ -84,7 +84,7 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             >
               <Icon
                 name={iconName}
-                size={22}
+                style={styles.iconSize}
                 color={isFocused ? theme.white : theme.primary}
               />
             </TouchableOpacity>

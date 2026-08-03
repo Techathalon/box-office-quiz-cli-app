@@ -5,7 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View as MotiView } from 'moti';
@@ -17,8 +16,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useAuth } from '../../hooks/useAuth';
 import { getLevelsForMode } from '../../services/api';
 import { useFocusEffect } from '@react-navigation/native';
-
-const { width } = Dimensions.get('window');
+import { styles } from '../../components/style';
 
 export default function LevelSelectionScreen({ route, navigation }: any) {
   const { mode, title } = route.params;
@@ -90,11 +88,13 @@ export default function LevelSelectionScreen({ route, navigation }: any) {
           >
             <Feather
               name="arrow-left"
-              size={20}
-              style={{ color: theme.iconText }}
+              style={[styles.iconSize, { color: theme.iconText }]}
             />
           </TouchableOpacity>
-          <Text className="text-2xl font-black tracking-wide ml-4 text-white uppercase">
+          <Text
+            className=" font-black tracking-wide ml-4  uppercase"
+            style={[styles.largeTitleSize, { color: theme.text }]}
+          >
             {title}
           </Text>
         </View>
@@ -113,15 +113,15 @@ export default function LevelSelectionScreen({ route, navigation }: any) {
             <View className="flex-row items-center justify-between mb-4">
               <View className="flex-row items-center">
                 <Text
-                  className=" font-medium text-[14px] uppercase tracking-wider ml-2"
-                  style={{ color: theme.lightskyprimary }}
+                  className=" font-medium  uppercase tracking-wider ml-2"
+                  style={[styles.titleSize, { color: theme.lightskyprimary }]}
                 >
                   Campaign Progress
                 </Text>
               </View>
               <Text
-                className=" font-black text-[15px]"
-                style={{ color: theme.iconText }}
+                className=" font-black "
+                style={[styles.iconText, { color: theme.iconText }]}
               >
                 {progressPercent}%
               </Text>
@@ -135,19 +135,19 @@ export default function LevelSelectionScreen({ route, navigation }: any) {
               />
             </View>
             <View className="flex-row justify-between mt-4">
-              <Text className=" text-[13px]" style={{ color: theme.white }}>
+              <Text style={[styles.titleSize, { color: theme.white }]}>
                 Cleared:{' '}
                 <Text className="text-green-400 font-bold">
                   {completedCount}
                 </Text>
               </Text>
-              <Text className=" text-[13px]" style={{ color: theme.white }}>
+              <Text style={[styles.titleSize, { color: theme.white }]}>
                 Failed:{' '}
                 <Text className="text-rose-400 font-bold">
                   {lostList.length}
                 </Text>
               </Text>
-              <Text className=" text-[13px]" style={{ color: theme.white }}>
+              <Text style={[styles.titleSize, { color: theme.white }]}>
                 Total:{' '}
                 <Text className="text-white font-bold">{questionCount}</Text>
               </Text>
@@ -176,8 +176,7 @@ export default function LevelSelectionScreen({ route, navigation }: any) {
                 centerIcon = (
                   <MaterialIcons
                     name="check-circle"
-                    size={width * 0.055}
-                    color="#047857"
+                    style={[styles.iconSize, { color: '#047857' }]}
                   />
                 );
               } else if (isLost) {
@@ -187,8 +186,7 @@ export default function LevelSelectionScreen({ route, navigation }: any) {
                 centerIcon = (
                   <MaterialIcons
                     name="error"
-                    size={width * 0.055}
-                    color="#B91C1C"
+                    style={[styles.iconSize, { color: '#B91C1C' }]}
                   />
                 );
               } else if (isCurrent) {
@@ -196,14 +194,20 @@ export default function LevelSelectionScreen({ route, navigation }: any) {
                 borderColor = 'border-amber-500';
                 textColor = 'text-amber-800';
                 centerIcon = (
-                  <Feather name="play" size={width * 0.055} color="#B45309" />
+                  <Feather
+                    name="play"
+                    style={[styles.iconSize, { color: '#B45309' }]}
+                  />
                 );
               } else if (!isUnlocked) {
                 cardBg = 'bg-zinc-900';
                 borderColor = 'border-zinc-800';
                 textColor = 'text-zinc-600';
                 centerIcon = (
-                  <Feather name="lock" size={width * 0.055} color="#4B5563" />
+                  <Feather
+                    name="lock"
+                    style={[styles.iconSize, { color: '#4B5563' }]}
+                  />
                 );
               }
 
@@ -237,7 +241,8 @@ export default function LevelSelectionScreen({ route, navigation }: any) {
                     >
                       {centerIcon}
                       <Text
-                        className={`text-lg font-black tracking-tight ${textColor}`}
+                        className={` font-black tracking-tight ${textColor}`}
+                        style={[styles.titleSize]}
                       >
                         {levelNum}
                       </Text>

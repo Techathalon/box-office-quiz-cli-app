@@ -5,6 +5,7 @@ import { View as MotiView } from 'moti';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useTheme } from '../hooks/useTheme';
 import useSound from '../hooks/useSound';
+import { styles } from './style';
 
 interface RenderOptionsProps {
   mode: GameMode;
@@ -51,11 +52,6 @@ export default function RenderOptions({
     }
   }, [scrambledLetters, mode, correctAnswer, maskedWord, displayMask]);
   useEffect(() => {
-    // if (selectedAnswer && selectedAnswer !== correctAnswer) {
-    //   playSound('wrong_answer_sound.mp3');
-    // } else {
-    //   playSound('correct.mp3');
-    // }
     return () => {
       stopSound('correct.mp3');
       stopSound('wrong_answer_sound.mp3');
@@ -133,14 +129,17 @@ export default function RenderOptions({
                   }}
                 >
                   <Text
-                    className="text-2xl font-black"
-                    style={{
-                      color: isEvaluated
-                        ? selectedAnswer === correctAnswer
-                          ? '#10B981'
-                          : '#EF4444'
-                        : theme.iconText,
-                    }}
+                    className=" font-black"
+                    style={[
+                      styles.littleLargeTitleSize,
+                      {
+                        color: isEvaluated
+                          ? selectedAnswer === correctAnswer
+                            ? '#10B981'
+                            : '#EF4444'
+                          : theme.iconText,
+                      },
+                    ]}
                   >
                     {filledLetter || ''}
                   </Text>
@@ -161,8 +160,11 @@ export default function RenderOptions({
                 }}
               >
                 <Text
-                  className="text-2xl font-black"
-                  style={{ color: theme.iconText }}
+                  className="font-black"
+                  style={[
+                    styles.littleLargeTitleSize,
+                    { color: theme.iconText },
+                  ]}
                 >
                   {char}
                 </Text>
@@ -192,15 +194,15 @@ export default function RenderOptions({
               }}
             >
               <Text
-                className="text-[12px] font-bold tracking-wider text-center uppercase"
-                style={{ color: theme.iconText }}
+                className=" font-bold tracking-wider text-center uppercase"
+                style={[styles.titleSize, { color: theme.iconText }]}
               >
                 SELECT A LETTER
               </Text>
             </View>
             <Text
               className="text-[14px] font-semibold mt-1.5 text-center uppercase"
-              style={{ color: theme.text }}
+              style={[styles.titleSize, { color: theme.text }]}
             >
               Tap a filled blank above to remove it
             </Text>
@@ -226,8 +228,8 @@ export default function RenderOptions({
                 }}
               >
                 <Text
-                  className="text-xl font-black"
-                  style={{ color: theme.text }}
+                  className="font-black"
+                  style={[styles.littleLargeTitleSize, { color: theme.text }]}
                 >
                   {letter}
                 </Text>
@@ -275,7 +277,7 @@ export default function RenderOptions({
                 key={index}
                 disabled={isEvaluated || !currentLetter}
                 onPress={() => handleRemovePuzzleLetter(index)}
-                className="w-12 h-14 rounded-xl justify-center items-center border"
+                className="w-[16%] h-[35%] rounded-xl justify-center items-center border"
                 style={{
                   borderWidth: 2,
                   borderColor: isEvaluated
@@ -289,14 +291,17 @@ export default function RenderOptions({
                 }}
               >
                 <Text
-                  className="text-2xl font-black"
-                  style={{
-                    color: isEvaluated
-                      ? selectedLetters.join('') === correctAnswer
-                        ? '#10B981'
-                        : '#EF4444'
-                      : theme.iconText,
-                  }}
+                  className=" font-black"
+                  style={[
+                    styles.littleLargeTitleSize,
+                    {
+                      color: isEvaluated
+                        ? selectedLetters.join('') === correctAnswer
+                          ? '#10B981'
+                          : '#EF4444'
+                        : theme.iconText,
+                    },
+                  ]}
                 >
                   {currentLetter || ''}
                 </Text>
@@ -317,7 +322,7 @@ export default function RenderOptions({
           }}
         >
           {/* Styled Header Instruction Chip */}
-          <View className="items-center mb-4">
+          <View className="items-center mb-3">
             <View
               className="px-3 py-1 rounded-full border"
               style={{
@@ -326,15 +331,15 @@ export default function RenderOptions({
               }}
             >
               <Text
-                className="text-[12px] font-bold tracking-wider text-center uppercase"
-                style={{ color: theme.iconText }}
+                className=" font-bold tracking-wider text-center uppercase"
+                style={[styles.titleSize, { color: theme.iconText }]}
               >
                 SELECT A LETTER
               </Text>
             </View>
             <Text
-              className="text-[14px] font-semibold mt-1.5 text-center uppercase"
-              style={{ color: theme.text }}
+              className=" font-semibold mt-1.5 text-center uppercase"
+              style={[styles.titleSize, { color: theme.text }]}
             >
               Tap a filled blank above to remove it
             </Text>
@@ -352,8 +357,11 @@ export default function RenderOptions({
                 }}
               >
                 <Text
-                  className="text-xl font-black"
-                  style={{ color: theme.iconText }}
+                  className=" font-black"
+                  style={[
+                    styles.littleLargeTitleSize,
+                    { color: theme.iconText },
+                  ]}
                 >
                   {letter}
                 </Text>
@@ -413,24 +421,28 @@ export default function RenderOptions({
                     playSound('wrong_answer_sound.mp3');
                   }
                 }}
-                className="w-full py-4 px-6 rounded-2xl mb-3 flex-row justify-between items-center"
+                className="w-full  px-6 rounded-2xl mb-3 flex-row justify-between items-center"
                 style={{
+                  paddingVertical: width * 0.03,
                   borderWidth: 2,
                   borderColor: borderColor,
                   backgroundColor: backgroundColor,
                   shadowColor: theme.shadow,
-                  shadowOffset: { width: 0, height: 2 },
+                  shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 1,
                   shadowRadius: 4,
                   elevation: 2,
                 }}
               >
                 <Text
-                  className="text-base font-black tracking-wide"
-                  style={{
-                    color: textColor,
-                    textDecorationLine: textDecorationLine,
-                  }}
+                  className=" font-black tracking-wide"
+                  style={[
+                    styles.titleSize,
+                    {
+                      color: textColor,
+                      textDecorationLine: textDecorationLine,
+                    },
+                  ]}
                 >
                   {option}
                 </Text>
@@ -458,7 +470,7 @@ export default function RenderOptions({
     );
   };
   return (
-    <View className="pb-8 mt-6">
+    <View className="flex-1 pb-1 mt-3">
       {mode === 'MISSING_LETTERS' && renderMissingLettersMode()}
       {mode === 'LETTER_PUZZLE' && renderLetterPuzzleMode()}
       {mode !== 'MISSING_LETTERS' &&

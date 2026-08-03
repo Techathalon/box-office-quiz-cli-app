@@ -14,6 +14,7 @@ export default function AppTabs() {
       screenOptions={{
         headerShown: false,
         sceneStyle: { backgroundColor: 'transparent' },
+        animation: 'shift',
       }}
     >
       <Tab.Screen name="Home" children={() => <HomeScreen />} />

@@ -21,7 +21,7 @@ import multiavatar from '@multiavatar/multiavatar/esm';
 import { getAllUsersWithProgress } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
 import { User, GameMode } from '../../types/type';
-
+import { styles as commonStyles } from '../../components/style';
 const { width, height } = Dimensions.get('window');
 const PAGE_SIZE = 15;
 
@@ -190,16 +190,17 @@ export default function LeaderboardScreen() {
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{
-        paddingHorizontal: 12,
-        paddingVertical: 12,
+        paddingHorizontal: width * 0.02,
+        paddingVertical: height * 0.01,
         alignItems: 'center',
-        gap: 8,
+        gap: width * 0.02,
+        height: height * 0.08,
       }}
       style={{
         backgroundColor: theme.card || '#FFFFFF',
-        borderBottomWidth: 1,
+        borderBottomWidth: width * 0.001,
         borderBottomColor: theme.border || '#E5E7EB',
-        maxHeight: 80,
+        maxHeight: height * 0.08,
       }}
     >
       {TABS.map((tab, idx) => {
@@ -209,7 +210,7 @@ export default function LeaderboardScreen() {
             key={tab.key}
             onPress={() => handleTabPress(idx)}
             activeOpacity={0.8}
-            className="flex-row items-center justify-center px-5 py-3 rounded-full"
+            className="flex-row items-center justify-center px-5 py-1 rounded-full"
             style={{
               backgroundColor: isActive
                 ? theme.primary || '#3B82F6'
@@ -223,25 +224,30 @@ export default function LeaderboardScreen() {
                   backgroundColor: `${theme.primary}4D`,
                   width: width * 0.08,
                   height: height * 0.04,
-                  marginRight: 6,
+                  marginRight: width * 0.02,
                 }}
               >
                 <MaterialCommunityIcons
                   name={tab.icon}
-                  size={18}
                   color={isActive ? theme.white : theme.primary || '#6B7280'}
-                  style={{
-                    textAlign: 'center',
-                    textAlignVertical: 'center',
-                    includeFontPadding: false,
-                  }}
+                  style={[
+                    commonStyles.iconSize,
+                    {
+                      textAlign: 'center',
+                      textAlignVertical: 'center',
+                      includeFontPadding: false,
+                    },
+                  ]}
                 />
               </View>
             )}
 
             <Text
-              className="text-[13px] font-bold "
-              style={{ color: isActive ? theme.white : theme.primary }}
+              className=" font-bold "
+              style={[
+                commonStyles.titleSize,
+                { color: isActive ? theme.white : theme.primary },
+              ]}
             >
               {tab.title}
             </Text>
@@ -259,44 +265,44 @@ export default function LeaderboardScreen() {
     ];
 
     return (
+      // Outer Container filling parent flex-[42]
       <View
-        className="pt-6  px-4 items-center justify-center border-b mb-4"
+        className="flex-1  px-2 items-center justify-between border-b"
         style={{
           backgroundColor: theme.surface || '#FAFAFA',
           borderColor: theme.border || '#E5E7EB',
         }}
       >
-        <Text
-          className="text-center font-black text-[13px] uppercase tracking-widest mb-6"
-          style={{ color: theme.textSecondary || '#6B7280' }}
-        >
-          🏆 Top Champions
-        </Text>
+        {/* Title Header */}
+        <View className=" flex-[8] justify-center items-center">
+          <Text
+            className="text-center font-black  uppercase tracking-widest"
+            style={[
+              commonStyles.titleSize,
+              { color: theme.textSecondary || '#6B7280' },
+            ]}
+          >
+            🏆 Top Champions
+          </Text>
+        </View>
 
-        <View className="flex-row items-end justify-center w-full px-2">
+        {/* Podium Cards Row */}
+        <View className=" flex-[92] flex-row items-end justify-center w-full mt-3 px-1">
           {podiumOrder.map((user, idx) => {
-            const svgCode = multiavatar(user?.avatar || 'Binx Bond');
             if (!user) {
-              return <View key={idx} style={{ width: width * 0.28 }} />;
+              return <View key={idx} className="w-[30%]" />;
             }
 
+            const svgCode = multiavatar(user?.avatar || 'Binx Bond');
             const isFirst = user.rank === 1;
             const isSecond = user.rank === 2;
 
-            // 1. Heights for the physical steps underneath
-            // Center (#1) = 75px, Left (#2) = 50px, Right (#3) = 35px
-            const stepHeight = isFirst
-              ? height * 0.098
-              : isSecond
-              ? height * 0.07
-              : height * 0.05;
-
-            const sizeMultiplier = width * 0.002;
             const crownColor = isFirst
               ? '#FFD700'
               : isSecond
               ? '#C0C0C0'
               : '#CD7F32';
+
             const {
               coins,
               winRatePercentage,
@@ -308,131 +314,146 @@ export default function LeaderboardScreen() {
             return (
               <MotiView
                 key={user.userId || idx}
-                from={{ opacity: 0, translateY: 30 }}
+                from={{ opacity: 0, translateY: 20 }}
                 animate={{ opacity: 1, translateY: 0 }}
                 transition={{ delay: idx * 100, type: 'timing' }}
-                className="items-center mx-1"
-                style={{ width: width * 0.28 }}
+                className="items-center w-[31%] flex-1 mx-0.5 justify-end"
               >
-                {/* Top Crown for Rank 1 */}
-                <View className="flex-row">
-                  <Text
-                    className="pr-2 font-black text-[15px]"
-                    style={{ color: theme.primaryYellow }}
-                  >
-                    {coins}
-                  </Text>
-                  <FontAwesome5
-                    name="coins"
-                    size={width * 0.05}
-                    color={theme.primaryYellow}
-                    style={{ marginBottom: -6, zIndex: 10 }}
-                  />
-                </View>
-
-                {isFirst ? (
-                  <MaterialCommunityIcons
-                    name="crown"
-                    size={width * 0.15}
-                    color={crownColor}
-                    style={{ marginBottom: -6, zIndex: 10 }}
-                  />
-                ) : (
-                  <MaterialCommunityIcons
-                    name="crown-outline"
-                    size={width * 0.15}
-                    color={crownColor}
-                    style={{ marginBottom: -6, zIndex: 10 }}
-                  />
-                )}
-
-                {/* Avatar Ring */}
+                {/* FIXED HEIGHT UPPER SECTION: Ensures top info takes uniform baseline */}
                 <View
-                  className="rounded-full items-center justify-center z-10"
-                  style={[
-                    styles.podiumRing,
-                    {
-                      borderColor: crownColor,
-                      width: 76 * sizeMultiplier,
-                      height: 76 * sizeMultiplier,
-                      borderWidth: isFirst ? 4 : 4,
-                    },
-                  ]}
+                  className={`items-center justify-end w-full pb-1 ${
+                    isFirst ? 'flex-[50]' : isSecond ? 'flex-[62]' : 'flex-[70]'
+                  } `}
                 >
-                  {/* {renderAvatar(user.avatar, 68 * sizeMultiplier)} */}
-                  <SvgXml xml={svgCode} />
+                  {/* 1. Coins Row */}
+                  <View className="flex-row items-center justify-center mb-0.5">
+                    <Text
+                      className="pr-1 font-black "
+                      style={[
+                        commonStyles.iconText,
+                        {
+                          color: theme.primaryYellow,
+                        },
+                      ]}
+                    >
+                      {coins}
+                    </Text>
+                    <FontAwesome5
+                      name="coins"
+                      style={[
+                        commonStyles.iconSize,
+                        { color: theme.primaryYellow },
+                      ]}
+                    />
+                  </View>
 
-                  {/* Rank Badge */}
+                  {/* 2. Crown Icon */}
+                  <View className="-mb-1 z-10">
+                    <MaterialCommunityIcons
+                      name={isFirst ? 'crown' : 'crown-outline'}
+                      style={[commonStyles.iconSize, { color: crownColor }]}
+                    />
+                  </View>
+
+                  {/* 3. Avatar Ring */}
                   <View
-                    className="absolute -bottom-2 rounded-full px-2 py-0.5"
-                    style={{ backgroundColor: crownColor }}
+                    className="rounded-full items-center justify-center z-10 overflow-hidden relative"
+                    style={{
+                      borderColor: crownColor,
+                      width: width * 0.12,
+                      height: height * 0.06,
+                      borderWidth: width * 0.01,
+                    }}
                   >
-                    <Text className="text-[15px] font-black text-white">
-                      {user.rank}
+                    <View className="w-full h-full items-center justify-center">
+                      <SvgXml xml={svgCode} width="100%" height="100%" />
+                    </View>
+
+                    {/* Rank Badge */}
+                    <View
+                      className="absolute -bottom-2 rounded-full p-1 z-15 "
+                      style={{ backgroundColor: crownColor }}
+                    >
+                      <Text
+                        className=" font-black text-white  z-20"
+                        style={commonStyles.textSize}
+                      >
+                        {user.rank}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* 4. User Name */}
+                  <Text
+                    className=" font-bold mt-1 text-center px-0.5"
+                    numberOfLines={1}
+                    style={[
+                      commonStyles.iconText,
+                      { color: theme.text || '#111827' },
+                    ]}
+                  >
+                    {user.name}
+                  </Text>
+
+                  {/* 5. Wins & Winrate */}
+                  <View className="flex-row items-center my-0.5">
+                    <MaterialCommunityIcons
+                      name="trophy"
+                      style={[commonStyles.iconSize, { color: crownColor }]}
+                    />
+                    <Text
+                      className=" font-black ml-0.5"
+                      style={[
+                        commonStyles.iconText,
+                        { color: theme.primaryYellowDark || '#D97706' },
+                      ]}
+                    >
+                      {user.wonCount || 0}W ({winRatePercentage}%)
                     </Text>
                   </View>
                 </View>
-
-                {/* User Details */}
-                <Text
-                  className="text-[13px] font-bold mt-3 text-center px-1"
-                  numberOfLines={1}
-                  style={{ color: theme.text || '#111827' }}
-                >
-                  {user.name}
-                </Text>
-
-                <View className="flex-row items-center mt-0.5 mb-2">
-                  <MaterialCommunityIcons
-                    name="trophy"
-                    size={width * 0.05}
-                    color={crownColor}
-                  />
-                  <Text
-                    className="text-[13px] font-black ml-1"
-                    style={{ color: theme.primaryYellowDark || '#D97706' }}
-                  >
-                    {user.wonCount || 0} Wins
-                  </Text>
-                  <Text
-                    className="text-[14px] font-black ml-1"
-                    style={{ color: theme.text || '#111827' }}
-                  >
-                    {winRatePercentage}%
-                  </Text>
-                </View>
-
-                {/* Physical Step / Stand Base */}
                 <View
-                  className="w-full rounded-t-2xl items-center justify-center border-t border-x"
+                  className={`w-full rounded-t-xl items-center justify-center border-t ${
+                    isFirst ? 'flex-[50]' : isSecond ? 'flex-[38]' : 'flex-[30]'
+                  }`}
                   style={{
-                    borderTopWidth: 8,
-                    height: stepHeight,
+                    borderTopWidth: width * 0.02,
                     backgroundColor: isFirst
                       ? `${theme.lightskyprimary}`
                       : `${theme.white}`,
                     borderColor: crownColor,
                   }}
                 >
-                  <View className="flex-row items-center">
-                    <View className="pr-2">
+                  <View className="flex-row items-center justify-center">
+                    <View className="pr-1">
                       {awardTitle === 'Diamond' || awardTitle === 'Novice' ? (
                         <MaterialCommunityIcons
                           name={iconName}
-                          size={width * 0.05}
-                          color={awardBadgeColor}
+                          style={[
+                            commonStyles.iconSize,
+                            { color: awardBadgeColor },
+                          ]}
                         />
                       ) : (
                         <FontAwesome5
                           name={iconName}
-                          size={width * 0.05}
-                          color={awardBadgeColor}
+                          style={[
+                            commonStyles.iconSize,
+                            { color: awardBadgeColor },
+                          ]}
                         />
                       )}
                     </View>
                     <Text
-                      className="font-black text-[20px] opacity-40"
-                      style={{ color: isFirst ? theme.primary : theme.text }}
+                      className="font-black    opacity-40"
+                      style={[
+                        commonStyles.iconText,
+                        {
+                          color: isFirst
+                            ? theme.primaryDark
+                            : theme.primaryYellowDark,
+                        },
+                      ]}
                     >
                       {user.rank}
                     </Text>
@@ -463,8 +484,11 @@ export default function LeaderboardScreen() {
         }}
       >
         <Text
-          className="text-[15px] font-black w-8 text-center"
-          style={{ color: theme.textSecondary || '#6B7280' }}
+          className=" font-black w-8 text-center"
+          style={[
+            commonStyles.titleSize,
+            { color: theme.textSecondary || '#6B7280' },
+          ]}
         >
           {item.rank}
         </Text>
@@ -477,28 +501,34 @@ export default function LeaderboardScreen() {
 
         <View className="flex-1">
           <Text
-            className="text-[14px] font-bold"
+            className=" font-bold"
             numberOfLines={1}
-            style={{ color: theme.text || '#111827' }}
+            style={[commonStyles.titleSize, { color: theme.text || '#111827' }]}
           >
             {item.name}
           </Text>
           <View className="flex-row items-center mt-0.5">
             <Text
-              className="text-[14px] font-semibold"
-              style={{ color: theme.success || '#10B981' }}
+              className=" font-semibold"
+              style={[
+                commonStyles.titleSize,
+                { color: theme.success || '#10B981' },
+              ]}
             >
               {item.wonCount || 0} Wins
             </Text>
             <Text
-              className="text-[10px] mx-1.5"
-              style={{ color: theme.textSecondary }}
+              className=" mx-1.5"
+              style={[commonStyles.textSize, { color: theme.textSecondary }]}
             >
               •
             </Text>
             <Text
-              className="text-[13px] font-medium"
-              style={{ color: theme.textSecondary || '#6B7280' }}
+              className=" font-medium"
+              style={[
+                commonStyles.titleSize,
+                { color: theme.textSecondary || '#6B7280' },
+              ]}
             >
               {winRatePercentage}% Win Rate
             </Text>
@@ -509,29 +539,29 @@ export default function LeaderboardScreen() {
             {awardTitle === 'Diamond' || awardTitle === 'Novice' ? (
               <MaterialCommunityIcons
                 name={iconName}
-                size={width * 0.05}
-                color={awardBadgeColor}
+                style={[commonStyles.iconSize, { color: awardBadgeColor }]}
               />
             ) : (
               <FontAwesome5
                 name={iconName}
-                size={width * 0.05}
-                color={awardBadgeColor}
+                style={[commonStyles.iconSize, { color: awardBadgeColor }]}
               />
             )}
           </View>
           <View className="flex-row ">
             <Text
-              className="pr-2 text-[16px] font-black"
-              style={{ color: theme.primaryYellow || '#111827' }}
+              className="pr-2  font-black"
+              style={[
+                commonStyles.titleSize,
+                { color: theme.primaryYellow || '#111827' },
+              ]}
             >
               {' '}
               {coins}
             </Text>
             <FontAwesome5
               name="coins"
-              size={width * 0.05}
-              color={theme.primaryYellow || '#D1D5DB'}
+              style={[commonStyles.iconSize, { color: theme.primaryYellow }]}
             />
           </View>
         </View>
@@ -549,10 +579,10 @@ export default function LeaderboardScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 pb-9">
-      <View>{renderTabs()}</View>
+    <SafeAreaView className="flex-1  pb-9">
+      <View className="flex[8]">{renderTabs()}</View>
 
-      <View>{renderPodium()}</View>
+      <View className="flex-[42] overflow-hidden">{renderPodium()}</View>
 
       {loading && leaderboardData.length === 0 ? (
         <View className="flex-1 justify-center items-center">
@@ -566,6 +596,7 @@ export default function LeaderboardScreen() {
         </View>
       ) : (
         <FlatList
+          className="flex-[50] mt-1"
           data={otherPlayers}
           renderItem={({ item, index }) => renderItem(item, index)}
           keyExtractor={(item, idx) =>

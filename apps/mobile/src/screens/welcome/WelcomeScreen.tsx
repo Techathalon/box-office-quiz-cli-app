@@ -12,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { AppStackParamList } from '../../navigation/type';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../hooks/useTheme';
+import { styles } from '../../components/style';
 
 const { height, width } = Dimensions.get('window');
 
@@ -47,8 +48,8 @@ const WelcomePage: React.FC = () => {
               color={theme.iconText || '#FFCC00'}
             />
             <Text
-              className="font-bold text-[10px] tracking-widest ml-2 uppercase"
-              style={{ color: theme.iconText || '#FFCC00' }}
+              className="font-bold  tracking-widest ml-2 uppercase"
+              style={[styles.iconText, { color: theme.iconText || '#FFCC00' }]}
             >
               Now Showing
             </Text>
@@ -67,15 +68,28 @@ const WelcomePage: React.FC = () => {
 
             {/* Ticket Header */}
             <View className="items-center mt-2">
-              <Text className="text-gray-400 text-xs font-bold tracking-[0.3em] uppercase mb-1">
+              <Text
+                className="text-gray-400  font-bold tracking-[0.3em] uppercase mb-1"
+                style={styles.textSize}
+              >
                 ★ Lights Camera Action ★
               </Text>
               <Text className="text-3xl font-black tracking-tighter text-center uppercase">
-                <Text style={{ color: theme.primaryYellow || '#FFCC00' }}>
+                <Text
+                  style={[
+                    styles.extraLargeTitleSize,
+                    { color: theme.primaryYellow || '#FFCC00' },
+                  ]}
+                >
                   Box Office
                 </Text>
                 {'\n'}
-                <Text className="text-white">QuizUp</Text>
+                <Text
+                  className="text-white"
+                  style={[styles.extraLargeTitleSize]}
+                >
+                  QuizUp
+                </Text>
               </Text>
             </View>
           </View>
@@ -97,15 +111,18 @@ const WelcomePage: React.FC = () => {
             }}
             activeOpacity={0.85}
           >
-            <Text className="text-zinc-950 text-lg font-black tracking-widest uppercase mr-2">
+            <Text
+              className="text-zinc-950  font-black tracking-widest uppercase mr-2"
+              style={styles.titleSize}
+            >
               Start Game
             </Text>
             <Ionicons name="play" size={width * 0.04} color="#09090b" />
           </TouchableOpacity>
 
           <Text
-            className="mt-4 tracking-wider uppercase text-md font-semibold"
-            style={{ color: theme.text || '#C68A4C' }}
+            className="mt-4 tracking-wider uppercase  font-semibold"
+            style={[styles.titleSize, { color: theme.text || '#C68A4C' }]}
           >
             Are you ready to test your movie brain?
           </Text>

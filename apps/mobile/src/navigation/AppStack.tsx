@@ -12,6 +12,7 @@ export default function AppStack() {
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: 'transparent' },
+        animation: 'fade',
       }}
     >
       <Stack.Screen name="Welcome" component={WelcomePage} />

@@ -11,6 +11,7 @@ import {
 import { useTheme } from '../hooks/useTheme';
 import Icon from 'react-native-vector-icons/Feather';
 import { Card } from '../types/type';
+import { styles } from './style';
 
 const { width, height } = Dimensions.get('window');
 const FULL_WIDTH = width - 40;
@@ -35,7 +36,7 @@ export default function CardPage({ mode }: CardProps) {
         style={{
           width: isColumn ? FULL_WIDTH : CARD_WIDTH,
           // Slightly increased column height to 0.12 so typography and images layout elegantly together
-          height: isColumn ? height * 0.12 : height * 0.2,
+          height: isColumn ? height * 0.1 : height * 0.2,
           backgroundColor: `${theme.card}`,
           borderColor: theme.border,
           ...Platform.select({
@@ -56,7 +57,13 @@ export default function CardPage({ mode }: CardProps) {
       >
         {/* ROW MODE ONLY: Background Illustration Layer (Untouched) */}
         {!isColumn && mode.characterImg && (
-          <View className="absolute right-[-10px] bottom-[-23px] w-[85%] h-[80%] pointer-events-none ">
+          <View
+            className="absolute  w-[85%] h-[80%] pointer-events-none "
+            style={{
+              right: width * 0.0,
+              bottom: -(height * 0.018),
+            }}
+          >
             <Image
               source={mode.characterImg}
               resizeMode="contain"
@@ -67,26 +74,28 @@ export default function CardPage({ mode }: CardProps) {
 
         {/* LEFT SIDE LAYER: Icon + Text Content */}
         <View
-          className={`flex-1 flex-row items-center ${
+          className={`flex-[60] flex-row items-center ${
             isColumn ? 'pr-4' : 'h-full flex-col justify-between'
           }`}
         >
           {/* Main info container grouping icon and text */}
           <View
             className={`${
-              isColumn ? 'flex-row items-center flex-1' : 'w-full'
+              isColumn ? 'flex-row  items-center flex-1' : 'w-full'
             }`}
           >
             {/* Category Icon */}
             {mode.icon && (
               <View
-                className="w-10 h-10 rounded-xl items-center justify-center"
+                className={`p-3 ${
+                  isColumn ? 'w-[17%]' : 'w-[29%]'
+                } w-[28%] left-0 rounded-xl items-center justify-start`}
                 style={{ backgroundColor: theme.iconBg }}
               >
                 <Icon
                   name={mode.icon}
-                  size={width * 0.045}
                   color={theme.iconText}
+                  style={styles.iconSize}
                 />
               </View>
             )}
@@ -98,21 +107,23 @@ export default function CardPage({ mode }: CardProps) {
               }`}
             >
               <Text
-                className={`font-black tracking-tight  ${
-                  isColumn ? 'text-lg mb-0' : 'text-base mb-0.5'
-                }`}
+                className={`font-black tracking-tight `}
                 numberOfLines={1}
-                style={{ color: theme.text }}
+                style={{
+                  color: theme.text,
+                  fontSize: isColumn ? width * 0.032 : width * 0.03,
+                }}
               >
                 {mode.title}
               </Text>
 
               <Text
-                className={` leading-tight  text-[11px] ${
-                  isColumn ? 'text-[14px]' : 'text-[13px]'
-                }`}
+                className={` leading-tight font-bold `}
                 numberOfLines={isColumn ? 2 : 3}
-                style={{ color: theme.textSecondary }}
+                style={{
+                  color: theme.textSecondary,
+                  fontSize: isColumn ? width * 0.03 : width * 0.028,
+                }}
               >
                 {mode.desc}
               </Text>
@@ -125,7 +136,10 @@ export default function CardPage({ mode }: CardProps) {
               className="px-4 py-1.5 rounded-full self-start items-center justify-center"
               style={{ backgroundColor: theme.primary }}
             >
-              <Text className="text-[10px] font-black text-white tracking-wider uppercase">
+              <Text
+                className=" font-black text-white tracking-wider uppercase"
+                style={styles.textSize}
+              >
                 {mode.buttonText}
               </Text>
             </View>
@@ -133,7 +147,7 @@ export default function CardPage({ mode }: CardProps) {
         </View>
 
         {isColumn && (
-          <View className="flex-row items-center justify-end h-full min-w-[60px]">
+          <View className="flex-row items-center flex-[30] justify-end h-full min-w-[60px]">
             {mode.hasToggle ? (
               /* Option A: Settings Action Toggle Switch */
               <Switch
@@ -144,7 +158,7 @@ export default function CardPage({ mode }: CardProps) {
               />
             ) : mode.characterImg ? (
               /* Option B: Clean Right-Aligned Avatar/Character Image Showcase */
-              <View className="w-40 h-40 rounded-2xl overflow-visible   botton-[-20px]">
+              <View className="w-[50%] h-full rounded-2xl overflow-visible   botton-[-20px]">
                 <Image
                   source={mode.characterImg}
                   resizeMode="contain"
@@ -157,7 +171,10 @@ export default function CardPage({ mode }: CardProps) {
                 className="px-3.5 py-2 rounded-xl items-center justify-center"
                 style={{ backgroundColor: theme.primary }}
               >
-                <Text className="text-[10px] font-black text-white tracking-wider uppercase">
+                <Text
+                  className=" font-black text-white tracking-wider uppercase"
+                  style={{ fontSize: width * 0.03 }}
+                >
                   {mode.buttonText}
                 </Text>
               </View>
