@@ -84,6 +84,5 @@ export async function getUserProgress(userId: number) {
 }
 export async function getQuestionsCount() {
   const response = await api.get('/question/count');
-  console.log('questionsCount:', response.data);
   return response.data;
 }

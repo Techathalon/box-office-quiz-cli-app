@@ -38,10 +38,8 @@ export default function LevelSelectionScreen({ route, navigation }: any) {
           }
           setLoading(true);
           const res = await getLevelsForMode(user?.id as number, mode);
-          console.log('res:', res);
           if (res.success) {
             const data = await res.levels.levels;
-            console.log('data:', data);
             setCurrentLevel(Number(data.currentLevel) || 1);
             setWonList((data.levelsWon || []).map(Number));
             setLostList((data.levelsLost || []).map(Number));

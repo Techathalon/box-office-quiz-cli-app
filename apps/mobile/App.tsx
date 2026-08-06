@@ -13,6 +13,7 @@ import CustomAlert from './src/components/CustomAlert';
 import AppStack from './src/navigation/AppStack';
 import AppLayout from './src/components/AppLayout';
 import { NavigationContainer } from '@react-navigation/native';
+import mobileAds, { MaxAdContentRating } from 'react-native-google-mobile-ads';
 import { ImageBackground } from 'react-native';
 import { handleDeviceOnboarding } from './src/services/api';
 import { useEffect, useState } from 'react';
@@ -27,6 +28,34 @@ function App() {
   const getState = useAlertStore();
   const { user, setUser, setTotalQuestions } = useAuth();
   const [isReady, setIsReady] = useState(false);
+  useEffect(() => {
+    mobileAds()
+      .setRequestConfiguration({
+        maxAdContentRating: MaxAdContentRating.PG,
+
+        // 👇 FIX THIS PROPERTY NAME FROM 'testDeviceIdentifiers' TO 'testDeviceIds'
+        testDeviceIdentifiers: [
+          'EMULATOR',
+          '9b22ca39-0ae2-46ea-94d0-ee65bab7f18c',
+        ],
+      })
+      .then(() => mobileAds().initialize())
+      .then(adapterStatuses => {
+        // Look specifically for the Google Mobile Ads status
+        const googleStatus = adapterStatuses.find(
+          adapter => adapter.name === 'com.google.android.gms.ads.MobileAds',
+        );
+
+        if (googleStatus && googleStatus.state === 1) {
+          console.log('✅ Google AdMob SDK initialized and ready!');
+        } else {
+          console.log('⚠️ AdMob SDK initialization pending...');
+        }
+      })
+      .catch(error => {
+        console.error('❌ Error initializing AdMob SDK:', error);
+      });
+  }, []);
   useEffect(() => {
     const checkHydration = async () => {
       if (
@@ -87,7 +116,6 @@ function App() {
           <AppLayout>
             <AppStack />
           </AppLayout>
-          {/* <AppStack /> */}
         </NavigationContainer>
 
         <Toast />

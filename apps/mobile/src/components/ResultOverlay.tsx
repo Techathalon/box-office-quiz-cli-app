@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -22,6 +22,21 @@ import useSound from '../hooks/useSound';
 import { UserProgress } from '../types/type';
 import AppLayout from './AppLayout';
 import { styles } from './style';
+import {
+  AdEventType,
+  RewardedAd,
+  RewardedAdEventType,
+  TestIds,
+  InterstitialAd,
+} from 'react-native-google-mobile-ads';
+
+const adUnitId = __DEV__
+  ? TestIds.REWARDED
+  : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+
+const interstitialAdUnitId = __DEV__
+  ? TestIds.INTERSTITIAL
+  : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
 
 const { width } = Dimensions.get('window');
 
@@ -48,6 +63,10 @@ export default function ResultOverlay({
   const { playSound, stopSound } = useSound();
   const [showCoinModal, setShowCoinModal] = React.useState(false);
   const [userProgress, setUserProgress] = React.useState<UserProgress>();
+  const [loaded, setLoaded] = React.useState(false);
+  const [interstitialAdLoaded, setInterstitialAdLoaded] = React.useState(false);
+  const interstitialAdRef = useRef<InterstitialAd | null>(null);
+  const rewardedAdRef = useRef<RewardedAd | null>(null);
 
   useEffect(() => {
     let confettiInterval: any;
@@ -109,6 +128,108 @@ export default function ResultOverlay({
     };
     fetchUserProgress();
   }, [user, isVisible, hasWon]);
+
+  const loadNewRewardedAd = useCallback(() => {
+    setLoaded(false);
+
+    const adInstance = RewardedAd.createForAdRequest(adUnitId, {
+      keywords: ['fashion', 'clothing'],
+    });
+
+    const unsubscribeLoaded = adInstance.addAdEventListener(
+      RewardedAdEventType.LOADED,
+      () => {
+        setLoaded(true);
+      },
+    );
+
+    const unsubscribeEarned = adInstance.addAdEventListener(
+      RewardedAdEventType.EARNED_REWARD,
+      reward => {
+        console.log('User earned reward:', reward);
+      },
+    );
+
+    const unsubscribeClosed = adInstance.addAdEventListener(
+      AdEventType.CLOSED,
+      () => {
+        setLoaded(false);
+        setShowCoinModal(true); // Open rewards modal after ad is closed
+      },
+    );
+
+    const unsubscribeError = adInstance.addAdEventListener(
+      AdEventType.ERROR,
+      error => {
+        console.warn('Rewarded Ad Error:', error.message);
+        setLoaded(false);
+      },
+    );
+
+    adInstance.load();
+    rewardedAdRef.current = adInstance;
+
+    return () => {
+      unsubscribeLoaded();
+      unsubscribeEarned();
+      unsubscribeClosed();
+      unsubscribeError();
+    };
+  }, []);
+
+  const loadNewInterstitialAd = useCallback(() => {
+    setInterstitialAdLoaded(false);
+
+    const interstitialAdInstance = InterstitialAd.createForAdRequest(
+      interstitialAdUnitId,
+      {
+        keywords: ['gaming', 'entertainment'],
+      },
+    );
+
+    const unsubscribeLoaded = interstitialAdInstance.addAdEventListener(
+      AdEventType.LOADED,
+      () => {
+        setInterstitialAdLoaded(true);
+      },
+    );
+
+    const unsubscribeClosed = interstitialAdInstance.addAdEventListener(
+      AdEventType.CLOSED,
+      () => {
+        setInterstitialAdLoaded(false);
+        onNext(); // Proceed to the next level after the interstitial ad is closed
+      },
+    );
+
+    const unsubscribeError = interstitialAdInstance.addAdEventListener(
+      AdEventType.ERROR,
+      error => {
+        console.warn('Interstitial Ad Error:', error.message);
+        setInterstitialAdLoaded(false);
+      },
+    );
+
+    interstitialAdInstance.load();
+    interstitialAdRef.current = interstitialAdInstance;
+
+    return () => {
+      unsubscribeLoaded();
+      unsubscribeClosed();
+      unsubscribeError();
+    };
+  }, [onNext]);
+  useEffect(() => {
+    if (isVisible) {
+      const cleanupInterstitial = loadNewInterstitialAd();
+      const cleanupListeners = loadNewRewardedAd();
+      return () => {
+        cleanupListeners();
+        cleanupInterstitial();
+      };
+    }
+  }, [isVisible, loadNewRewardedAd, loadNewInterstitialAd]);
+
   const rewards = useMemo(() => {
     if (!userProgress) {
       return;
@@ -123,16 +244,23 @@ export default function ResultOverlay({
 
   const handleNext = () => {
     if (hasWon) {
-      setShowCoinModal(true);
+      if (loaded && rewardedAdRef.current) {
+        rewardedAdRef.current.show();
+      } else {
+        setShowCoinModal(true);
+      }
     } else {
-      onNext();
+      if (interstitialAdLoaded && interstitialAdRef.current) {
+        interstitialAdRef.current.show();
+      } else {
+        onNext();
+      }
     }
   };
   const handleCloseCoinModal = () => {
     setShowCoinModal(false);
     onNext();
   };
-  console.log('rewards data form result overlay:', rewards);
 
   return (
     <Modal
@@ -301,7 +429,7 @@ export default function ResultOverlay({
                     />
                     <Text
                       className="text-zinc-600 font-black  tracking-wide uppercase ml-1"
-                      style={styles.littleLargeTitleSize}
+                      style={styles.titleSize}
                     >
                       Levels
                     </Text>
@@ -315,7 +443,7 @@ export default function ResultOverlay({
                   >
                     <Text
                       className="text-white font-black  tracking-wide mr-1 uppercase"
-                      style={styles.littleLargeTitleSize}
+                      style={styles.titleSize}
                     >
                       Level {nextLevel}
                     </Text>

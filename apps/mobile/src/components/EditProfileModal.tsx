@@ -68,7 +68,6 @@ export default function EditProfileModal({
         user?.deviceToken || '',
       );
       if (response) {
-        console.log('Profile updated successfully:', response);
         setUser(response.user);
         setIsModalVisible(false);
       }

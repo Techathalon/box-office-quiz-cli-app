@@ -15,7 +15,6 @@ export const calculateUserRewards = (
   lostCount: number = 0,
 ) => {
   const { totalQuestions } = useAuthStore.getState();
-  console.log('totalQuestions', totalQuestions);
   const COINS_PER_WIN = 10;
   const COINS_PER_LOSS = 0;
   const baseCoins = wonCount * COINS_PER_WIN + lostCount * COINS_PER_LOSS;
@@ -27,7 +26,6 @@ export const calculateUserRewards = (
   let awardTitle = 'Novice';
   let awardBadgeColor = '#e28a05';
   let iconName = 'poker-chip'; //MaterialCommunityIcons
-  console.log('totalQuestions', totalQuestions);
   if (wonCount >= 200) {
     awardTitle = 'Diamond';
     iconName = 'diamond-stone'; //MaterialCommunityIcons

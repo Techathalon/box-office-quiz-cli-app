@@ -44,7 +44,6 @@ export default function HomeScreen() {
           setLoading(true);
           const progress = await getUserProgress(user?.id as number);
           setUserProgress(progress.userProgress);
-          console.log('User progress:', progress);
         } catch (error) {
           console.error('Error fetching user progress:', error);
         } finally {
@@ -155,7 +154,7 @@ export default function HomeScreen() {
     );
   }
   return (
-    <SafeAreaView className="absolute inset-0">
+    <SafeAreaView className="flex-1">
       <View className="px-4 pt-4 flex-row justify-between items-center">
         <View className="flex-row items-center space-x-3">
           <View
