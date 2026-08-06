@@ -18,7 +18,9 @@ export default function AppLayout({ children, ...props }: AppLayoutProps) {
       {...props}
     >
       <View
-        className={`absolute inset-0 ${mode === 'dark' ? 'bg-black/60' : ''} }`}
+        className={`absolute inset-0 ${
+          mode === 'dark' ? 'bg-black/60' : 'bg-white/40'
+        } }`}
       />
       {children}
       <View className="bottom-0 w-full items-center border-2  border-gray-300 bg-white">

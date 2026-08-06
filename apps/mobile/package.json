@@ -8,7 +8,11 @@
     "lint": "eslint .",
     "start": "react-native start",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "build:android": "cd android && ./gradlew assembleRelease",
+    "clear:android": "cd android && ./gradlew clean",
+    "build:ios": "mkdir -p ios/build && xcodebuild -workspace ios/mobile.xcworkspace -scheme mobile -configuration Release -archivePath ios/build/mobile.xcarchive archive && xcodebuild -exportArchive -archivePath ios/build/mobile.xcarchive -exportOptionsPlist ios/ExportOptions.plist -exportPath ios/build/output",
+    "clear:ios": "cd ios && xcodebuild clean -workspace mobile.xcworkspace -scheme mobile && rm -rf build Pods/Manifest.lock"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

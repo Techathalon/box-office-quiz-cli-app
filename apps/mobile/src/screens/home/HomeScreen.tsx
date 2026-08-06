@@ -155,10 +155,10 @@ export default function HomeScreen() {
   }
   return (
     <SafeAreaView className="flex-1">
-      <View className="px-4 pt-4 flex-row justify-between items-center">
+      <View className="px-4 pt-1 flex-row justify-between items-center">
         <View className="flex-row items-center space-x-3">
           <View
-            className="w-14 h-14 rounded-full border-2 items-center justify-center bg-white"
+            className="w-14 h-14 rounded-full  items-center justify-center "
             style={{ borderColor: theme.border }}
           >
             <Text className="text-2xl">
