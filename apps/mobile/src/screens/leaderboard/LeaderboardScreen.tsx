@@ -114,9 +114,17 @@ export default function LeaderboardScreen() {
             rank: (pageNum - 1) * PAGE_SIZE + index + 1,
           }));
 
-          setLeaderboardData(prev =>
-            pageNum === 1 ? rankedUsers : [...prev, ...rankedUsers],
-          );
+          setLeaderboardData(prev => {
+            if (pageNum === 1) {
+              return rankedUsers;
+            } else {
+              const existingUserIds = new Set(prev.map(user => user.userId));
+              const newUsers = rankedUsers.filter(
+                user => !existingUserIds.has(user.userId),
+              );
+              return [...prev, ...newUsers];
+            }
+          });
 
           setHasMore(data.usersWithProgress?.pagination?.hasMore ?? false);
         } else {
