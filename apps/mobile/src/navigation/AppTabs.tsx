@@ -13,6 +13,8 @@ export default function AppTabs() {
       tabBar={props => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
+        sceneStyle: { backgroundColor: 'transparent' },
+        animation: 'shift',
       }}
     >
       <Tab.Screen name="Home" children={() => <HomeScreen />} />

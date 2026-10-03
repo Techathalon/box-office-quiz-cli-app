@@ -6,6 +6,7 @@ import { useTheme } from '../hooks/useTheme';
 import Feather from 'react-native-vector-icons/Feather';
 import Speech from '@mhpdev/react-native-speech';
 import { useState } from 'react';
+import { styles } from './style';
 
 interface RenderQuestionProps {
   mode: GameMode;
@@ -77,38 +78,45 @@ export default function RenderQuestion({
   switch (mode) {
     case 'BLURRED_POSTER':
       return (
-        <View className="items-center p-6 rounded-3xl" style={containerStyle}>
+        <View
+          className="items-center flex-1 p-6 rounded-3xl"
+          style={containerStyle}
+        >
           {imageUrl ? (
             <Image
               source={{ uri: imageUrl }}
               resizeMode="contain"
               blurRadius={4}
               style={{
-                width: width * 0.8,
-                height: height * 0.4,
+                width: width * 0.5,
+                height: height * 0.3,
                 borderRadius: width * 0.05,
               }}
               className="rounded-2xl"
             />
           ) : (
             <View
-              className="w-[220px] h-[320px] rounded-2xl justify-center items-center"
-              style={{ backgroundColor: theme.lightskyprimary }}
+              className="rounded-2xl justify-center items-center"
+              style={{
+                width: width * 0.5,
+                height: height * 0.3,
+                backgroundColor: theme.lightskyprimary,
+              }}
             >
               <Text style={{ color: theme.textSecondary }}>No Poster</Text>
             </View>
           )}
 
           <Text
-            className="mt-4 text-lg font-black"
-            style={{ color: theme.text }}
+            className="mt-4  font-black"
+            style={[styles.titleSize, { color: theme.text }]}
           >
             Guess the Movie
           </Text>
 
           <Text
-            className="text-xs mt-1 uppercase tracking-wide"
-            style={{ color: theme.textSecondary }}
+            className=" mt-1 uppercase tracking-wide"
+            style={[styles.descSize, { color: theme.textSecondary }]}
           >
             Identify the blurred movie poster.
           </Text>
@@ -126,12 +134,12 @@ export default function RenderQuestion({
               loop: true,
             }}
           >
-            <Text className="text-6xl mb-4 p-3 text-center">{emojis}</Text>
+            <Text className="text-4xl mb-4 p-3 text-center">{emojis}</Text>
           </MotiView>
 
           <Text
-            className="text-[13px] text-center font-black uppercase tracking-widest"
-            style={{ color: theme.text }}
+            className=" text-center font-black uppercase tracking-widest"
+            style={[styles.titleSize, { color: theme.text }]}
           >
             Decode the emojis and guess the movie.
           </Text>
@@ -140,11 +148,14 @@ export default function RenderQuestion({
 
     case 'LETTER_PUZZLE':
       return (
-        <View className="items-center p-6 rounded-3xl" style={containerStyle}>
+        <View
+          className="items-center flex-1 p-6 rounded-3xl"
+          style={containerStyle}
+        >
           {clue && (
             <Text
-              className="text-center font-black text-lg mb-5"
-              style={{ color: theme.text }}
+              className="text-center font-black  mb-2"
+              style={[styles.littleLargeTitleSize, { color: theme.text }]}
             >
               {clue}
             </Text>
@@ -154,15 +165,15 @@ export default function RenderQuestion({
             {scrambledLetters?.map((letter, index) => (
               <View
                 key={index}
-                className="w-14 h-14 rounded-xl justify-center items-center m-2 border"
+                className="w-[16%] h-[30%] rounded-xl justify-center items-center m-2 border"
                 style={{
                   backgroundColor: theme.iconBg,
                   borderColor: theme.primaryYellow,
                 }}
               >
                 <Text
-                  className="text-2xl font-black"
-                  style={{ color: theme.iconText }}
+                  className=" font-black"
+                  style={[styles.iconText, { color: theme.iconText }]}
                 >
                   {letter}
                 </Text>
@@ -171,8 +182,8 @@ export default function RenderQuestion({
           </View>
 
           <Text
-            className="text-[13px] text-center font-black uppercase tracking-widest"
-            style={{ color: theme.textSecondary }}
+            className=" text-center font-black mb-1 uppercase tracking-widest"
+            style={[styles.descSize, { color: theme.textSecondary }]}
           >
             Arrange these letters to find the movie.
           </Text>
@@ -187,8 +198,8 @@ export default function RenderQuestion({
         >
           {/* Dialogue Text */}
           <Text
-            className="text-xl text-center italic font-black mb-4 px-6"
-            style={{ color: theme.text }}
+            className=" text-center italic font-black mb-4 px-6"
+            style={[styles.littleLargeTitleSize, { color: theme.text }]}
           >
             "{dialogue}"
           </Text>
@@ -205,22 +216,27 @@ export default function RenderQuestion({
           >
             <Feather
               name={isSpeaking ? 'volume-x' : 'volume-2'}
-              size={width * 0.05}
-              color={isSpeaking ? theme.lightskyprimary : theme.iconText}
+              style={[
+                styles.iconSize,
+                { color: isSpeaking ? theme.lightskyprimary : theme.iconText },
+              ]}
             />
             <Text
-              className="font-bold text-[13px]  italic ml-2"
-              style={{
-                color: isSpeaking ? theme.lightskyprimary : theme.iconText,
-              }}
+              className="font-bold  italic ml-2"
+              style={[
+                styles.iconText,
+                {
+                  color: isSpeaking ? theme.lightskyprimary : theme.iconText,
+                },
+              ]}
             >
               {isSpeaking ? 'Stop Listening' : 'Listen Dialogue'}
             </Text>
           </TouchableOpacity>
 
           <Text
-            className="text-[13px] text-center font-black uppercase tracking-widest"
-            style={{ color: theme.textSecondary }}
+            className=" text-center font-black uppercase tracking-widest"
+            style={[styles.titleSize, { color: theme.textSecondary }]}
           >
             Which movie is this dialogue from?
           </Text>
@@ -231,15 +247,15 @@ export default function RenderQuestion({
       return (
         <View className="items-center p-6 rounded-3xl" style={containerStyle}>
           <Text
-            className="text-lg text-center font-black"
-            style={{ color: theme.text }}
+            className=" text-center font-black"
+            style={[styles.littleLargeTitleSize, { color: theme.text }]}
           >
             Spot the Correct Movie Title
           </Text>
 
           <Text
-            className="text-[13px] text-center font-black uppercase tracking-widest"
-            style={{ color: theme.textSecondary }}
+            className=" text-center font-black uppercase tracking-widest"
+            style={[styles.titleSize, { color: theme.textSecondary }]}
           >
             Only one spelling is correct.
           </Text>
@@ -251,27 +267,29 @@ export default function RenderQuestion({
         <View className="items-center p-6 rounded-3xl" style={containerStyle}>
           {clue && (
             <Text
-              className="text-lg font-black text-center mb-5"
-              style={{ color: theme.text }}
+              className=" font-black text-center mb-5"
+              style={[styles.littleLargeTitleSize, { color: theme.text }]}
             >
               {clue}
             </Text>
           )}
 
           <Text
-            style={{
-              fontSize: 36,
-              letterSpacing: 8,
-              fontWeight: '900',
-              color: theme.text,
-            }}
+            style={[
+              styles.littleLargeTitleSize,
+              {
+                letterSpacing: 8,
+                fontWeight: '900',
+                color: theme.text,
+              },
+            ]}
           >
             {maskedWord}
           </Text>
 
           <Text
-            className="text-[13px] text-center font-black uppercase tracking-widest"
-            style={{ color: theme.textSecondary }}
+            className=" text-center font-black uppercase tracking-widest"
+            style={[styles.titleSize, { color: theme.textSecondary }]}
           >
             Fill in the missing letters.
           </Text>

@@ -15,4 +15,8 @@ coverage
 android/app/build
 ios/build
 
+.envrc
+.env
+.env.development
+
 

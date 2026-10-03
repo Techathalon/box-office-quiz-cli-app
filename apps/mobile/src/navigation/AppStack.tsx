@@ -8,7 +8,13 @@ const Stack = createNativeStackNavigator();
 
 export default function AppStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: 'transparent' },
+        animation: 'fade',
+      }}
+    >
       <Stack.Screen name="Welcome" component={WelcomePage} />
       <Stack.Screen name="AppTabs" component={AppTabs} />
       <Stack.Screen name="LevelSelection" component={LevelSelectionScreen} />

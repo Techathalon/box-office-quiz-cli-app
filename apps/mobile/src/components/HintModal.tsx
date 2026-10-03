@@ -106,7 +106,8 @@ export default function HintModal({
             {
               width: CARD_SIZE,
               height: CARD_SIZE,
-              backgroundColor: theme.lightskyprimary,
+              // backgroundColor: `${theme.lightskyprimary}`,
+              backgroundColor: '#00000080',
             },
           ]}
         >
@@ -187,7 +188,7 @@ export default function HintModal({
 
               <Text
                 className="font-bold text-center text-[15px] leading-5"
-                style={{ color: theme.text }}
+                style={{ color: theme.white }}
               >
                 {hintText}
               </Text>

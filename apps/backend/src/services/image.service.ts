@@ -1,9 +1,4 @@
-import {
-  minio,
-  ensureBucket,
-  publicUrl,
-  nameToSlug,
-} from '../utils/minio.util.js';
+import { minio, ensureBucket, nameToSlug } from '../utils/minio.util.js';
 export async function fetchFilePosterImage(
   filePosterName: string,
 ): Promise<string | null> {
@@ -50,7 +45,7 @@ export async function ensureFilePosterImage(name: string, bucketName: string) {
   const fileName = `${nameToSlug(name)}.jpg`;
   try {
     await minio.statObject(bucketName, fileName);
-    return publicUrl(bucketName, fileName);
+    return fileName;
   } catch {
     //ignore
   }
@@ -62,6 +57,6 @@ export async function ensureFilePosterImage(name: string, bucketName: string) {
     await minio.putObject(bucketName, fileName, imgBuffer, imgBuffer.length, {
       'Content-Type': 'image/jpeg',
     });
-    return publicUrl(bucketName, fileName);
+    return fileName;
   }
 }
