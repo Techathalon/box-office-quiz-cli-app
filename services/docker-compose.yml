@@ -14,17 +14,12 @@ services:
     networks:
       - bollywood_net
 
-  pgadmin:
-    image: dpage/pgadmin4:7.7
-    container_name: pgadmin
+  adminer:
+    image: adminer:5.3.0
+    container_name: adminer
     restart: always
-    env_file:
-      - .env
-    environment:
-      PGADMIN_DEFAULT_EMAIL: '${PGADMIN_EMAIL}'
-      PGADMIN_DEFAULT_PASSWORD: '${PGADMIN_PASSWORD}'
     ports:
-      - '${PGADMIN_PORT}:80'
+      - '${ADMINER_PORT}:8080'
     depends_on:
       - postgres
     networks:
