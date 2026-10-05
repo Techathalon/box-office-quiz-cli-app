@@ -30,3 +30,29 @@ create-env-stage:
 	@chmod +x ./scripts/create-env.sh
 	@./scripts/create-env.sh "$(PWD)" "$(stage)"
 
+deploy:
+	@echo
+	@echo "🏭Building & 🚀Deploying development services"
+	@echo
+	docker compose --env-file services/.env -f services/docker-compose.yml up -d
+
+delete:
+	@echo
+	@echo "🏭Building & 🚀Deploying development services"
+	@echo
+	docker compose --env-file services/.env -f services/docker-compose.yml down -v
+
+recreate:
+	@echo
+	@echo "🚀  Recreating $(stage) services"
+	@echo "🗑️  Deleting $(stage) services"
+	@$(MAKE) --no-print-directory delete
+	@$(MAKE) --no-print-directory decrypt-envs
+	@$(MAKE) --no-print-directory create-env-stage
+	@echo
+	@$(MAKE) --no-print-directory deploy
+	pnpm --filter backend prisma:generate
+	pnpm --filter backend prisma:migrate
+	pnpm --filter backend prisma:seed
+	@echo "✅ $(stage) services recreated successfully"
+
