@@ -88,7 +88,7 @@ const WelcomePage: React.FC = () => {
                   className="text-white"
                   style={[styles.extraLargeTitleSize]}
                 >
-                  QuizUp
+                  Quiz
                 </Text>
               </Text>
             </View>

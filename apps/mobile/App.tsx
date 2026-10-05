@@ -23,6 +23,9 @@ import { useAuth } from './src/hooks/useAuth';
 import useAuthStore from './src/stores/auth.store';
 import { getQuestionsCount } from './src/services/api';
 import { useThemeStore } from './src/stores/theme.store';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs(['SafeAreaView has been deprecated']);
 
 function App() {
   const getState = useAlertStore();
