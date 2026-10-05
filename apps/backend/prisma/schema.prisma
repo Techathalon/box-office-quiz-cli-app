@@ -12,14 +12,44 @@ datasource db {
   provider = "postgresql"
 }
 model User {
+  id          Int      @id @default(autoincrement())
+  deviceToken String   @unique // Used to identify the physical device without a login
+  deviceType  String   
+  name        String   
+  avatar      String   
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  gameProgress     UserGameProgress[]
+}
+enum GameMode {
+  BLURRED_POSTER
+  EMOJI_RIDDLES
+  LETTER_PUZZLE
+  DIALOGUE_GURU
+  SPOT_THE_EXACT
+  MISSING_LETTERS
+}
 
-  id Int @id @default(autoincrement())
+model UserGameProgress {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mode         GameMode
+  currentLevel Int      @default(1)
+  levelsWon    Int[]    @default([])
+  levelsLost   Int[]    @default([])
+  updatedAt    DateTime @updatedAt
 
-  name String
+  @@unique([userId, mode])
+}
 
-  email String @unique
+model Question {
+  id          Int      @id @default(autoincrement())
+  mode        GameMode
+  levelNumber Int
+  content     Json     
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  password String
-
-  createdAt DateTime @default(now())
+  @@unique([mode, levelNumber])
 }

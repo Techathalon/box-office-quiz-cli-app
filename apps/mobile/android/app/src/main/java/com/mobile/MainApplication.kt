@@ -1,4 +1,4 @@
-package com.mobile
+package com.boxofficequizup.triviaapp
 
 import android.app.Application
 import com.facebook.react.PackageList

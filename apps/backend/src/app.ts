@@ -1,7 +1,6 @@
-import express from "express";
-import cors from "cors";
-
-//import userRoutes from "./routes/user.routes.js";
+import express from 'express';
+import cors from 'cors';
+import routes from './routes/index.js';
 
 const app = express();
 
@@ -10,14 +9,14 @@ app.use(cors());
 app.use(express.json());
 
 // Health Check
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: "Backend is running 🚀",
+    message: 'Backend is running 🚀',
   });
 });
 
 // Routes
-// app.use("/api/users", userRoutes);
+routes(app);
 
 export default app;
